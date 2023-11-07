@@ -6,6 +6,8 @@
 
 <section class="card">
   <img src={card.img} alt={card.name} />
-  <h2>{`${card.name} (${card.cardSet})`}</h2>
+  <a href={`/describe/${card.cardId}`}>
+    <h2>{`${card.name} (${card.cardSet})`}</h2>
+  </a>
   <p>{@html card.text}</p>
 </section>

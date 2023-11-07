@@ -6,11 +6,11 @@
 </script>
 
 <svelte:head>
-  <title>Hearth Art</title>
+  <title>Artstone</title>
   <meta name="description" content="Hearthstone card art described by AI" />
 </svelte:head>
 
-<h1>Hearth Art</h1>
+<h1>Artstone</h1>
 <p>Hearthstone Card art described by AI</p>
 
 <section role="search" class="card-search">
@@ -28,8 +28,7 @@
       {/each}
     </div>
   {:else}
-    <p>No cards found</p>
-  {/if}
+    <p>Cards will appear here.</p>{/if}
 </main>
 
 <style>

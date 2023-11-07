@@ -1,5 +1,6 @@
 import type { RequestEvent } from "@sveltejs/kit";
 import type { Card } from "../types/card.js";
+import { RAPID_API_KEY } from "$env/static/private";
 
 export const actions = {
   search: async ({ request }: RequestEvent) => {
@@ -10,7 +11,7 @@ export const actions = {
     const options = {
       method: "GET",
       headers: {
-        "X-RapidAPI-Key": "15f6918506msh2fda810a1beea9ep1b0070jsna4433ded3338",
+        "X-RapidAPI-Key": RAPID_API_KEY,
         "X-RapidAPI-Host": "omgvamp-hearthstone-v1.p.rapidapi.com"
       }
     };
