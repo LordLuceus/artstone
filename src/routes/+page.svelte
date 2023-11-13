@@ -21,17 +21,29 @@
 </section>
 
 <main>
-  {#if form?.cards}
+  {#if form?.data}
     <div class="cards">
-      {#each form.cards as card (card.cardId)}
-        <Card {card} />
-      {/each}
+      <ul>
+        {#each form.data as card (card.cardId)}
+          <li><Card {card} /></li>
+        {/each}
+      </ul>
     </div>
+  {:else if form?.error}
+    <p>No cards found.</p>
   {:else}
-    <p>Cards will appear here.</p>{/if}
+    <p>Cards will appear here.</p>
+  {/if}
 </main>
 
 <style>
+  .card-search {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
   .cards {
     display: flex;
     flex-wrap: wrap;
@@ -39,10 +51,9 @@
     flex-direction: column;
   }
 
-  .card-search {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    margin-bottom: 2rem;
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 </style>

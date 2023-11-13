@@ -1,5 +1,5 @@
 import { RAPID_API_KEY } from "$env/static/private";
-import type { Card } from "../../../types/card";
+import type { Card } from "../../../lib/types/card";
 
 export async function load({ params }) {
   const url = `https://omgvamp-hearthstone-v1.p.rapidapi.com/cards/${params.cardId}?collectible=1`;
