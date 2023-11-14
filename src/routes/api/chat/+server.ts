@@ -6,6 +6,8 @@ import type { ChatCompletionMessageParam } from "openai/resources";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
+export const config = { runtime: "edge" };
+
 export const POST = (async ({ request }) => {
   const { imageUrl } = await request.json();
   const messages: ChatCompletionMessageParam[] = [
