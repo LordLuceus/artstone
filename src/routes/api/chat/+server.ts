@@ -31,8 +31,7 @@ export const POST = (async ({ request }) => {
     max_tokens: 3000
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const stream = OpenAIStream(response as AsyncIterable<any>);
+  const stream = OpenAIStream(response);
 
   return new StreamingTextResponse(stream);
 }) satisfies RequestHandler;

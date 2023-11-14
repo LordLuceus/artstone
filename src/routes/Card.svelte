@@ -1,13 +1,13 @@
 <script lang="ts">
-  import type { Card } from "$lib/types/card";
+  import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
 
-  export let card: Card;
+  export let card: HearthstoneCardWithMetadata;
 </script>
 
 <section class="card">
-  <a href={`/describe/${card.cardId}`}>
-    <img src={card.img} alt={card.name} />
-    <h2>{`${card.name} (${card.cardSet})`}</h2>
+  <a href={`/hearthstone/${card.slug}`}>
+    <img src={card?.image} alt={card.name} />
+    <h2>{card.name}{card.cardSet ? ` (${card.cardSet.name})` : ""}</h2>
   </a>
   <p>{@html card.text}</p>
 </section>

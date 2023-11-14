@@ -1,5 +1,10 @@
-import hearthstone from "$lib/hearthstone-api";
-import type { Card } from "$lib/types/card";
+import { hearthstoneClient } from "$lib/hearthstone/hearthstone-api";
+import { addMetadata, getHearthstoneMetadata } from "$lib/hearthstone/hearthstone-metadata";
+import type {
+  HearthstoneCardSearchResponse,
+  HearthstoneCardWithMetadata
+} from "$lib/types/hearthstone";
+import type { HearthstoneMetadata } from "$lib/types/hearthstone-metadata";
 
 export const actions = {
   search: async ({ request }) => {
@@ -7,10 +12,18 @@ export const actions = {
     const query = formData.get("query");
 
     try {
-      const { data } = await hearthstone.get<Card[]>(`/search/${query}?collectible=1`);
+      const metadata = await getHearthstoneMetadata();
+      const { data } = await hearthstoneClient.cardSearch<HearthstoneCardSearchResponse>({
+        textFilter: query?.toString(),
+        gameMode: "constructed",
+        collectible: 1,
+        pageSize: 10
+      });
+
+      const cards: HearthstoneCardWithMetadata[] = filterCards(data, metadata);
 
       return {
-        data
+        data: cards
       };
     } catch (err) {
       console.error(err);
@@ -21,3 +34,15 @@ export const actions = {
     }
   }
 };
+
+function filterCards(data: HearthstoneCardSearchResponse, metadata: HearthstoneMetadata) {
+  const cards: HearthstoneCardWithMetadata[] = data.cards.filter(
+    (card) => card.image || card.imageGold || card.cropImage
+  );
+
+  addMetadata(cards, metadata);
+
+  // Filter out cards without a recognised set
+  const result = cards.filter((card) => card.cardSet);
+  return result;
+}

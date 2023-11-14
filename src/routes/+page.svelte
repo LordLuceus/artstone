@@ -22,15 +22,19 @@
 
 <main>
   {#if form?.data}
-    <div class="cards">
-      <ul>
-        {#each form.data as card (card.cardId)}
-          <li><Card {card} /></li>
-        {/each}
-      </ul>
-    </div>
+    {#if form?.data?.length > 0}
+      <div class="cards">
+        <ul>
+          {#each form.data as card (card.id)}
+            <li><Card {card} /></li>
+          {/each}
+        </ul>
+      </div>
+    {:else}
+      <p>No cards found.</p>
+    {/if}
   {:else if form?.error}
-    <p>No cards found.</p>
+    <p>Something went wrong. Please try again.</p>
   {:else}
     <p>Cards will appear here.</p>
   {/if}
