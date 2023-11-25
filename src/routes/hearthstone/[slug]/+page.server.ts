@@ -1,18 +1,15 @@
-import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
-import { hearthstoneClient } from "$lib/hearthstone/hearthstone-api";
-import { addMetadata, getHearthstoneMetadata } from "$lib/hearthstone/hearthstone-metadata";
+import { getCard } from "$lib/hearthstone/card";
 import { error } from "@sveltejs/kit";
+
+export const config = { runtime: "nodejs18.x" };
 
 export async function load({ params }) {
   const { slug } = params;
 
   try {
-    const metadata = await getHearthstoneMetadata();
-    const { data } = await hearthstoneClient.card<HearthstoneCardWithMetadata>({ id: slug });
+    const card = await getCard(slug);
 
-    addMetadata(data, metadata);
-
-    return { card: data };
+    return { card };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     if (err.response.status === 404) {

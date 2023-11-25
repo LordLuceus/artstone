@@ -1,10 +1,12 @@
-import { hearthstoneClient } from "$lib/hearthstone/hearthstone-api";
-import { addMetadata, getHearthstoneMetadata } from "$lib/hearthstone/hearthstone-metadata";
+import { hearthstoneClient } from "$lib/hearthstone/client";
+import { addMetadata, getHearthstoneMetadata } from "$lib/hearthstone/metadata";
 import type {
   HearthstoneCardSearchResponse,
   HearthstoneCardWithMetadata
 } from "$lib/types/hearthstone";
 import type { HearthstoneMetadata } from "$lib/types/hearthstone-metadata";
+
+export const config = { runtime: "nodejs18.x" };
 
 export const actions = {
   search: async ({ request }) => {
@@ -36,13 +38,11 @@ export const actions = {
 };
 
 function filterCards(data: HearthstoneCardSearchResponse, metadata: HearthstoneMetadata) {
-  const cards: HearthstoneCardWithMetadata[] = data.cards.filter(
-    (card) => card.image || card.imageGold || card.cropImage
-  );
+  const cards = data.cards.filter((card) => card.image);
 
-  addMetadata(cards, metadata);
+  const cardsWithMetadata = addMetadata(cards, metadata) as HearthstoneCardWithMetadata[];
 
   // Filter out cards without a recognised set
-  const result = cards.filter((card) => card.cardSet);
+  const result = cardsWithMetadata.filter((card) => card.cardSet);
   return result;
 }

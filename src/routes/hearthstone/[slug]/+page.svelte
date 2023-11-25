@@ -6,7 +6,7 @@
 
   export let data;
 
-  const { append, messages } = useChat({
+  const { append, error, messages, reload } = useChat({
     body: { imageUrl: data.card.image }
   });
 
@@ -30,14 +30,91 @@
   {#if data.card}
     <CardDetails card={data.card} />
     <h2>Description</h2>
-    {#each $messages as message}
-      {#if message.role === "assistant"}
-        <p class="message">
-          <SvelteMarkdown source={message.content} />
-        </p>
-      {/if}
-    {/each}
+    {#if $error}
+      <p class="error">There was an error fetching the description. Please try again.</p>
+    {:else}
+      {#each $messages as message}
+        {#if message.role === "assistant"}
+          <p class="message">
+            <SvelteMarkdown source={message.content} />
+          </p>
+          <div class="action-buttons">
+            <button aria-pressed="false">Upvote</button>
+            <button aria-pressed="false">Downvote</button>
+          </div>
+        {/if}
+      {/each}
+      <button on:click|preventDefault={() => reload()}>New description</button>
+    {/if}
   {:else}
     <p>Card details will appear here.</p>
   {/if}
 </main>
+
+<style>
+  main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+
+  nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: 1rem;
+    background-color: #fff;
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1);
+  }
+
+  nav a {
+    color: #000;
+    text-decoration: none;
+  }
+
+  nav a:hover {
+    text-decoration: underline;
+  }
+
+  main h2 {
+    margin-top: 2rem;
+  }
+
+  main p {
+    margin: 0;
+  }
+
+  .message {
+    margin: 0;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #eee;
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .action-buttons button {
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    background-color: #eee;
+  }
+
+  .action-buttons button:hover {
+    background-color: #ddd;
+  }
+
+  .action-buttons button:active {
+    background-color: #ccc;
+  }
+
+  .error {
+    color: red;
+  }
+</style>

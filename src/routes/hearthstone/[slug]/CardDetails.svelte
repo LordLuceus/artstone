@@ -35,7 +35,7 @@
       <li>Armor: {card.armor}</li>
     {/if}
     {#if card.minionTypes && card.minionTypes.length > 0}
-      <li>Minion Types: {card.minionTypes.map((mt) => mt.name).join(", ")}</li>
+      <li>Minion Type: {card.minionTypes.map((mt) => mt.name).join(", ")}</li>
     {/if}
     {#if card.spellSchool}
       <li>Spell School: {card.spellSchool.name}</li>
