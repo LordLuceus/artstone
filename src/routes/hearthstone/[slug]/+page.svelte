@@ -7,9 +7,10 @@
   export let data;
 
   let hideButtons = true;
+  let regenerate = false;
 
   const { append, error, messages, reload } = useChat({
-    body: { imageUrl: data.card.image, slug: data.card.slug },
+    body: { imageUrl: data.card.image, slug: data.card.slug, regenerate },
     onFinish: () => (hideButtons = false)
   });
 
@@ -18,6 +19,11 @@
       append({ content: "Describe this card.", role: "user" });
     }
   });
+
+  const handleNewDescriptionClick = () => {
+    regenerate = true;
+    reload({ options: { body: { regenerate } } });
+  };
 </script>
 
 <svelte:head>
@@ -48,7 +54,7 @@
           </div>
         {/if}
       {/each}
-      <button on:click|preventDefault={() => reload()}>New description</button>
+      <button on:click|preventDefault={handleNewDescriptionClick}>New description</button>
     {/if}
   {:else}
     <p>Card details will appear here.</p>

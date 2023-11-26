@@ -10,31 +10,33 @@ import { SupportedGames } from "$lib/types/games";
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 export const POST = (async ({ request }) => {
-  const { imageUrl, slug } = await request.json();
-
-  const description = await getDescription(SupportedGames.Hearthstone, slug);
-
-  if (description) {
-    return new Response(description.description);
-  }
-
-  const messages: ChatCompletionMessageParam[] = [
-    {
-      role: "system",
-      content: prompt
-    },
-    {
-      role: "user",
-      content: [
-        {
-          type: "image_url",
-          image_url: { url: imageUrl }
-        }
-      ]
-    }
-  ];
+  const { imageUrl, regenerate, slug } = await request.json();
 
   try {
+    if (!regenerate) {
+      const description = await getDescription(SupportedGames.Hearthstone, slug);
+
+      if (description) {
+        return new Response(description.description);
+      }
+    }
+
+    const messages: ChatCompletionMessageParam[] = [
+      {
+        role: "system",
+        content: prompt
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "image_url",
+            image_url: { url: imageUrl }
+          }
+        ]
+      }
+    ];
+
     const response = await openai.chat.completions.create({
       model: "gpt-4-vision-preview",
       stream: true,
@@ -45,7 +47,6 @@ export const POST = (async ({ request }) => {
     const stream = OpenAIStream(response, {
       onFinal: async (c: string) => {
         await setDescription(SupportedGames.Hearthstone, slug, { description: c });
-        console.log(`Cached description for ${slug}`);
       }
     });
 
