@@ -6,8 +6,11 @@
 
   export let data;
 
+  let hideButtons = true;
+
   const { append, error, messages, reload } = useChat({
-    body: { imageUrl: data.card.image }
+    body: { imageUrl: data.card.image, slug: data.card.slug },
+    onFinish: () => (hideButtons = false)
   });
 
   onMount(() => {
@@ -32,13 +35,14 @@
     <h2>Description</h2>
     {#if $error}
       <p class="error">There was an error fetching the description. Please try again.</p>
+      <button on:click|preventDefault={() => reload()}>Try again</button>
     {:else}
       {#each $messages as message}
         {#if message.role === "assistant"}
           <p class="message">
             <SvelteMarkdown source={message.content} />
           </p>
-          <div class="action-buttons">
+          <div class="action-buttons" hidden={hideButtons}>
             <button aria-pressed="false">Upvote</button>
             <button aria-pressed="false">Downvote</button>
           </div>

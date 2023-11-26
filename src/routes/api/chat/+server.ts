@@ -2,13 +2,21 @@ import prompt from "$lib/prompts/hs-prompt.md?raw";
 import OpenAI from "openai";
 import { OpenAIStream, StreamingTextResponse } from "ai";
 import { OPENAI_API_KEY } from "$env/static/private";
+import { getDescription, setDescription } from "$lib/descriptions/description";
 import type { RequestHandler } from "@sveltejs/kit";
 import type { ChatCompletionMessageParam } from "openai/resources";
+import { SupportedGames } from "$lib/types/games";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 export const POST = (async ({ request }) => {
-  const { imageUrl } = await request.json();
+  const { imageUrl, slug } = await request.json();
+
+  const description = await getDescription(SupportedGames.Hearthstone, slug);
+
+  if (description) {
+    return new Response(description.description);
+  }
 
   const messages: ChatCompletionMessageParam[] = [
     {
@@ -35,7 +43,10 @@ export const POST = (async ({ request }) => {
     });
 
     const stream = OpenAIStream(response, {
-      onFinal: (c: string) => console.log({ completion: c })
+      onFinal: async (c: string) => {
+        await setDescription(SupportedGames.Hearthstone, slug, { description: c });
+        console.log(`Cached description for ${slug}`);
+      }
     });
 
     return new StreamingTextResponse(stream);
