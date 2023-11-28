@@ -52,3 +52,19 @@ export async function downvoteDescription(game: SupportedGames, slug: string) {
 
   if (exists) await client.hincrby(key, "downvotes", 1);
 }
+
+export async function removeUpvote(game: SupportedGames, slug: string) {
+  const key = `${game}-card:${slug}:description`;
+
+  const exists = await client.exists(key);
+
+  if (exists) await client.hincrby(key, "upvotes", -1);
+}
+
+export async function removeDownvote(game: SupportedGames, slug: string) {
+  const key = `${game}-card:${slug}:description`;
+
+  const exists = await client.exists(key);
+
+  if (exists) await client.hincrby(key, "downvotes", -1);
+}
