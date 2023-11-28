@@ -10,8 +10,6 @@ export async function getCard(slug: string) {
   if (!card) {
     card = await fetchCard(slug);
     await client.set(`hearthstone-card:${slug}`, card, { ex: 86400 });
-
-    console.log("Fetched and cached card data");
   }
 
   card = addMetadata(card, metadata) as HearthstoneCardWithMetadata;

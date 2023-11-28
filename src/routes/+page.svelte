@@ -1,7 +1,5 @@
 <script>
   import { enhance } from "$app/forms";
-
-  export const prerender = true;
 </script>
 
 <svelte:head>
