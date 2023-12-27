@@ -13,7 +13,13 @@ export async function getCard(slug: string) {
   }
 
   card = addMetadata(card, metadata) as HearthstoneCardWithMetadata;
-  return card;
+
+  if (card.childIds && card.childIds.length > 0) {
+    const children = await Promise.all(card.childIds.map((childId) => getCard(childId.toString())));
+    (card as HearthstoneCardWithMetadata).relatedCards = children;
+  }
+
+  return card as HearthstoneCardWithMetadata;
 }
 
 async function fetchCard(slug: string) {

@@ -36,35 +36,3 @@ export async function setDescription(
 ) {
   await client.hset(`${game}-card:${slug}:description`, serialize(description));
 }
-
-export async function upvoteDescription(game: SupportedGames, slug: string) {
-  const key = `${game}-card:${slug}:description`;
-
-  const exists = await client.exists(key);
-
-  if (exists) await client.hincrby(key, "upvotes", 1);
-}
-
-export async function downvoteDescription(game: SupportedGames, slug: string) {
-  const key = `${game}-card:${slug}:description`;
-
-  const exists = await client.exists(key);
-
-  if (exists) await client.hincrby(key, "downvotes", 1);
-}
-
-export async function removeUpvote(game: SupportedGames, slug: string) {
-  const key = `${game}-card:${slug}:description`;
-
-  const exists = await client.exists(key);
-
-  if (exists) await client.hincrby(key, "upvotes", -1);
-}
-
-export async function removeDownvote(game: SupportedGames, slug: string) {
-  const key = `${game}-card:${slug}:description`;
-
-  const exists = await client.exists(key);
-
-  if (exists) await client.hincrby(key, "downvotes", -1);
-}

@@ -50,7 +50,5 @@ export interface HearthstoneCardWithMetadata extends HearthstoneCard {
   spellSchool?: Generic;
   rarity?: Rarity;
   keywords?: Keyword[];
-  artDescription?: string;
-  descriptionUpvotes?: number;
-  descriptionDownvotes?: number;
+  relatedCards?: HearthstoneCardWithMetadata[];
 }

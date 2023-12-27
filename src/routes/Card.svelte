@@ -7,7 +7,7 @@
 <section class="card">
   <a href={`/hearthstone/${card.slug}`}>
     <img src={card?.image} alt={card.name} />
-    <h2>{card.name}{card.cardSet ? ` (${card.cardSet.name})` : ""}</h2>
+    <h3>{card.name}{card.cardSet ? ` (${card.cardSet.name})` : ""}</h3>
   </a>
   <p>{@html card.text}</p>
 </section>
@@ -26,7 +26,7 @@
     height: auto;
   }
 
-  .card h2 {
+  .card h3 {
     margin: 0.5rem 0;
   }
 </style>

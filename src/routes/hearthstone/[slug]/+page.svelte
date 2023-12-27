@@ -3,15 +3,15 @@
   import SvelteMarkdown from "svelte-markdown";
   import { onMount } from "svelte";
   import CardDetails from "./CardDetails.svelte";
+  import Card from "../../Card.svelte";
+  import { card } from "blizzard.js/dist/resources/hs";
 
   export let data;
 
-  let hideButtons = true;
   let regenerate = false;
 
   const { append, error, messages, reload } = useChat({
-    body: { imageUrl: data.card.image, slug: data.card.slug, regenerate },
-    onFinish: () => (hideButtons = false)
+    body: { imageUrl: data.card.image, slug: data.card.slug, regenerate }
   });
 
   onMount(() => {
@@ -48,13 +48,17 @@
           <p class="message">
             <SvelteMarkdown source={message.content} />
           </p>
-          <div class="action-buttons" hidden={hideButtons}>
-            <button aria-pressed="false">Upvote</button>
-            <button aria-pressed="false">Downvote</button>
-          </div>
         {/if}
       {/each}
       <button on:click|preventDefault={handleNewDescriptionClick}>New description</button>
+    {/if}
+    {#if data.card.relatedCards}
+      <h2>Related cards</h2>
+      <ul>
+        {#each data.card.relatedCards as relatedCard}
+          <li><Card card={relatedCard} /></li>
+        {/each}
+      </ul>
     {/if}
   {:else}
     <p>Card details will appear here.</p>
@@ -104,27 +108,13 @@
     background-color: #eee;
   }
 
-  .action-buttons {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-  }
-
-  .action-buttons button {
-    padding: 0.5rem;
-    border-radius: 0.5rem;
-    background-color: #eee;
-  }
-
-  .action-buttons button:hover {
-    background-color: #ddd;
-  }
-
-  .action-buttons button:active {
-    background-color: #ccc;
-  }
-
   .error {
     color: red;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 </style>
