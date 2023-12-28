@@ -4,10 +4,10 @@ import { error } from "@sveltejs/kit";
 export const config = { runtime: "nodejs18.x" };
 
 export async function load({ params }) {
-  const { slug } = params;
+  const { id } = params;
 
   try {
-    const card = await getCard(slug);
+    const card = await getCard(Number(id));
 
     return { card };
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

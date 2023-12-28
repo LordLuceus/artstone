@@ -10,11 +10,11 @@ import { SupportedGames } from "$lib/types/games";
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
 export const POST = (async ({ request }) => {
-  const { imageUrl, regenerate, slug } = await request.json();
+  const { imageUrl, regenerate, id } = await request.json();
 
   try {
     if (!regenerate) {
-      const description = await getDescription(SupportedGames.Hearthstone, slug);
+      const description = await getDescription(SupportedGames.Hearthstone, id);
 
       if (description) {
         return new Response(description.description);
@@ -46,7 +46,7 @@ export const POST = (async ({ request }) => {
 
     const stream = OpenAIStream(response, {
       onFinal: async (c: string) => {
-        await setDescription(SupportedGames.Hearthstone, slug, { description: c });
+        await setDescription(SupportedGames.Hearthstone, id, { description: c });
       }
     });
 

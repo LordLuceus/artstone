@@ -4,14 +4,13 @@
   import { onMount } from "svelte";
   import CardDetails from "./CardDetails.svelte";
   import Card from "../../Card.svelte";
-  import { card } from "blizzard.js/dist/resources/hs";
 
   export let data;
 
   let regenerate = false;
 
   const { append, error, messages, reload } = useChat({
-    body: { imageUrl: data.card.image, slug: data.card.slug, regenerate }
+    body: { imageUrl: data.card.image, id: data.card.id, regenerate }
   });
 
   onMount(() => {

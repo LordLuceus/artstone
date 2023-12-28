@@ -5,7 +5,7 @@
 </script>
 
 <section class="card">
-  <a href={`/hearthstone/${card.slug}`}>
+  <a href={`/hearthstone/${card.id}`}>
     <img src={card?.image} alt={card.name} />
     <h3>{card.name}{card.cardSet ? ` (${card.cardSet.name})` : ""}</h3>
   </a>
