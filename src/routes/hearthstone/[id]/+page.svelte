@@ -1,7 +1,6 @@
 <script lang="ts">
   import { useChat } from "ai/svelte";
   import SvelteMarkdown from "svelte-markdown";
-  import { onMount } from "svelte";
   import CardDetails from "./CardDetails.svelte";
   import Card from "../../Card.svelte";
 
@@ -9,20 +8,22 @@
 
   let regenerate = false;
 
-  const { append, error, messages, reload } = useChat({
-    body: { imageUrl: data.card.image, id: data.card.id, regenerate }
-  });
+  const { append, error, messages, reload, setMessages } = useChat({});
 
-  onMount(() => {
-    if (data.card) {
-      append({ content: "Describe this card.", role: "user" });
-    }
-  });
+  $: if (data.card) {
+    append(
+      { content: "Describe this card.", role: "user" },
+      { options: { body: { regenerate, id: data.card.id, imageUrl: data.card.image } } }
+    );
+  }
 
   const handleNewDescriptionClick = () => {
     regenerate = true;
-    reload({ options: { body: { regenerate } } });
+    reload({ options: { body: { regenerate, id: data.card.id, imageUrl: data.card.image } } });
+    regenerate = false;
   };
+
+  $: description = $messages.findLast((m) => m.role === "assistant")?.content;
 </script>
 
 <svelte:head>
@@ -42,13 +43,9 @@
       <p class="error">There was an error fetching the description. Please try again.</p>
       <button on:click|preventDefault={() => reload()}>Try again</button>
     {:else}
-      {#each $messages as message}
-        {#if message.role === "assistant"}
-          <p class="message">
-            <SvelteMarkdown source={message.content} />
-          </p>
-        {/if}
-      {/each}
+      <p class="message">
+        <SvelteMarkdown source={description} />
+      </p>
       <button on:click|preventDefault={handleNewDescriptionClick}>New description</button>
     {/if}
     {#if data.card.relatedCards}

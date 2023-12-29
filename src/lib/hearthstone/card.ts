@@ -1,16 +1,10 @@
 import { client } from "$lib/kv/client";
-import { getHearthstoneMetadata, addMetadata } from "./metadata";
 import type { HearthstoneCard, HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
+import type { HearthstoneMetadata } from "$lib/types/hearthstone-metadata";
 import { hearthstoneClient } from "./client";
-
-const fetchedIds = new Set<number>();
+import { addMetadata, getHearthstoneMetadata } from "./metadata";
 
 export async function getCard(id: number) {
-  if (fetchedIds.has(id)) {
-    throw new Error(`Oi! Circular dependency detected for card id: ${id}`);
-  }
-  fetchedIds.add(id);
-
   const metadata = await getHearthstoneMetadata();
   let card = await client.get<HearthstoneCard>(`hearthstone-card:${id}`);
 
@@ -19,7 +13,7 @@ export async function getCard(id: number) {
       card = await fetchCard(id);
       await client.set(`hearthstone-card:${card.id}`, card, { ex: 86400 });
     } catch (error) {
-      console.error(`Error fetching card data for slug: ${id}`, error);
+      console.error(`Error fetching card data for id: ${id}`, error);
       throw error;
     }
   }
@@ -27,17 +21,33 @@ export async function getCard(id: number) {
   card = addMetadata(card, metadata) as HearthstoneCardWithMetadata;
 
   if (card.childIds && card.childIds.length > 0) {
-    const filteredIds = card.childIds.filter((childId) => !fetchedIds.has(childId));
-    const children = await Promise.all(filteredIds.map((childId) => getCard(childId)));
-    (card as HearthstoneCardWithMetadata).relatedCards = children;
+    (card as HearthstoneCardWithMetadata).relatedCards = await getRelatedCards(
+      card.childIds,
+      metadata
+    );
   }
-
-  fetchedIds.delete(id);
 
   return card as HearthstoneCardWithMetadata;
 }
 
 async function fetchCard(id: number) {
-  const { data } = await hearthstoneClient.card<HearthstoneCardWithMetadata>({ id });
+  const { data } = await hearthstoneClient.card<HearthstoneCard>({ id });
   return data;
+}
+
+async function getRelatedCards(ids: number[], metadata: HearthstoneMetadata) {
+  const cards = await Promise.all(ids.map((id) => getRelatedCard(id, metadata)));
+  return cards;
+}
+
+async function getRelatedCard(id: number, metadata: HearthstoneMetadata) {
+  const cached = await client.get<HearthstoneCard>(`hearthstone-card:${id}`);
+
+  if (cached) {
+    return addMetadata(cached, metadata) as HearthstoneCardWithMetadata;
+  }
+
+  const card = await fetchCard(id);
+
+  return addMetadata(card, metadata) as HearthstoneCardWithMetadata;
 }

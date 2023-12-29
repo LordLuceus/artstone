@@ -17,7 +17,7 @@ export const POST = (async ({ request }) => {
       const description = await getDescription(SupportedGames.Hearthstone, id);
 
       if (description) {
-        return new Response(description.description);
+        return new Response(description);
       }
     }
 
@@ -46,7 +46,7 @@ export const POST = (async ({ request }) => {
 
     const stream = OpenAIStream(response, {
       onFinal: async (c: string) => {
-        await setDescription(SupportedGames.Hearthstone, id, { description: c });
+        await setDescription(SupportedGames.Hearthstone, id, c);
       }
     });
 

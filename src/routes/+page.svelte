@@ -1,7 +1,3 @@
-<script>
-  import { enhance } from "$app/forms";
-</script>
-
 <svelte:head>
   <title>Artstone</title>
   <meta name="description" content="Hearthstone card art described by AI" />
@@ -11,7 +7,7 @@
 <p>Hearthstone Card art described by AI</p>
 
 <section role="search" class="card-search">
-  <form use:enhance action="/hearthstone/search" class="search-form">
+  <form action="/hearthstone/search" class="search-form">
     <input type="text" name="query" placeholder="Search for cards" autocomplete="off" />
     <button type="submit">Search</button>
   </form>
