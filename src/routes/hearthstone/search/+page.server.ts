@@ -11,6 +11,8 @@ export const config = { runtime: "nodejs18.x" };
 
 export async function load({ url }) {
   const query = url.searchParams.get("query");
+  const c = url.searchParams.get("class");
+  console.log(c);
 
   try {
     const metadata = await getHearthstoneMetadata();
