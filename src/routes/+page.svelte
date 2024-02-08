@@ -51,7 +51,7 @@
         {#each data.metadata.sets as s (s.id)}
           <li>
             <label>
-              <input type="checkbox" name="set" value={s.slug} />
+              <input type="radio" name="set" value={s.slug} />
               {s.name}
             </label>
           </li>

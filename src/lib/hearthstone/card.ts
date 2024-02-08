@@ -59,8 +59,8 @@ async function getRelatedCard(id: number, metadata: HearthstoneMetadata) {
 
 export async function searchCards(
   query: string | null,
-  classFilter: CardClass[],
-  setFilter: string[]
+  classFilter: string | null,
+  setFilter: string | null
 ): Promise<HearthstoneCardSearchResponse> {
   const metadata = await getHearthstoneMetadata();
   const { data } = await hearthstoneClient.cardSearch<HearthstoneCardSearchResponse>({
@@ -68,8 +68,8 @@ export async function searchCards(
     gameMode: "constructed",
     collectible: 1,
     pageSize: 1000,
-    class: classFilter[0],
-    set: setFilter[0]
+    class: classFilter as CardClass | undefined,
+    set: setFilter ?? undefined
   });
 
   const cards = filterCards(data, metadata);
