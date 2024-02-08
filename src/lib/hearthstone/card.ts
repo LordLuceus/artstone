@@ -1,6 +1,11 @@
 import { client } from "$lib/kv/client";
-import type { HearthstoneCard, HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
+import type {
+  HearthstoneCard,
+  HearthstoneCardSearchResponse,
+  HearthstoneCardWithMetadata
+} from "$lib/types/hearthstone";
 import type { HearthstoneMetadata } from "$lib/types/hearthstone-metadata";
+import type { CardClass } from "blizzard.js/dist/resources/hs";
 import { hearthstoneClient } from "./client";
 import { addMetadata, getHearthstoneMetadata } from "./metadata";
 
@@ -50,4 +55,34 @@ async function getRelatedCard(id: number, metadata: HearthstoneMetadata) {
   const card = await fetchCard(id);
 
   return addMetadata(card, metadata) as HearthstoneCardWithMetadata;
+}
+
+export async function searchCards(
+  query: string | null,
+  classFilter: CardClass[],
+  setFilter: string[]
+): Promise<HearthstoneCardSearchResponse> {
+  const metadata = await getHearthstoneMetadata();
+  const { data } = await hearthstoneClient.cardSearch<HearthstoneCardSearchResponse>({
+    textFilter: query ?? undefined,
+    gameMode: "constructed",
+    collectible: 1,
+    pageSize: 1000,
+    class: classFilter[0],
+    set: setFilter[0]
+  });
+
+  const cards = filterCards(data, metadata);
+
+  return { cards, page: 1, pageCount: 1, cardCount: cards.length };
+}
+
+function filterCards(data: HearthstoneCardSearchResponse, metadata: HearthstoneMetadata) {
+  const cards = data.cards.filter((card) => card.image);
+
+  const cardsWithMetadata = addMetadata(cards, metadata) as HearthstoneCardWithMetadata[];
+
+  // Filter out cards without a recognised set
+  const result = cardsWithMetadata.filter((card) => card.cardSet);
+  return result;
 }
