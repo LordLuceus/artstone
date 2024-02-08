@@ -15,6 +15,7 @@
       }
     });
 
+    params.set("page", "1");
     const url = `/hearthstone/search?${params.toString()}`;
 
     goto(url);
@@ -37,8 +38,21 @@
         {#each data.metadata.classes as c (c.id)}
           <li>
             <label>
-              <input type="checkbox" name="class" value={c.id} />
+              <input type="checkbox" name="class" value={c.slug} />
               {c.name}
+            </label>
+          </li>
+        {/each}
+      </ul>
+    </fieldset>
+    <fieldset>
+      <legend><h2>Sets</h2></legend>
+      <ul>
+        {#each data.metadata.sets as s (s.id)}
+          <li>
+            <label>
+              <input type="checkbox" name="set" value={s.slug} />
+              {s.name}
             </label>
           </li>
         {/each}
