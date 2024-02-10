@@ -60,21 +60,23 @@ async function getRelatedCard(id: number, metadata: HearthstoneMetadata) {
 export async function searchCards(
   query: string | null,
   classFilter: string | null,
-  setFilter: string | null
+  setFilter: string | null,
+  pageNumber = 1
 ): Promise<HearthstoneCardSearchResponse> {
   const metadata = await getHearthstoneMetadata();
   const { data } = await hearthstoneClient.cardSearch<HearthstoneCardSearchResponse>({
     textFilter: query ?? undefined,
     gameMode: "constructed",
     collectible: 1,
-    pageSize: 1000,
+    page: pageNumber,
+    pageSize: 20,
     class: classFilter as CardClass | undefined,
     set: setFilter ?? undefined
   });
 
   const cards = filterCards(data, metadata);
 
-  return { cards, page: 1, pageCount: 1, cardCount: cards.length };
+  return { cards, page: data.page, pageCount: data.pageCount, cardCount: data.cardCount };
 }
 
 function filterCards(data: HearthstoneCardSearchResponse, metadata: HearthstoneMetadata) {
