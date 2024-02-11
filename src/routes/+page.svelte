@@ -47,16 +47,14 @@
     </fieldset>
     <fieldset>
       <legend><h2>Sets</h2></legend>
-      <ul>
+      <select name="set">
+        <option value="">All Sets</option>
         {#each data.metadata.sets as s (s.id)}
-          <li>
-            <label>
-              <input type="radio" name="set" value={s.slug} />
-              {s.name}
-            </label>
-          </li>
+          <option value={s.slug}>
+            {s.name}
+          </option>
         {/each}
-      </ul>
+      </select>
     </fieldset>
     <input type="text" name="query" placeholder="Search for cards" autocomplete="off" />
     <button type="submit">Search</button>
