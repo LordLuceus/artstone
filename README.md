@@ -1,38 +1,25 @@
-# create-svelte
+# Artstone
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+Artstone is a project that leverages ChatGPT's vision capabilities to provide detailed and accurate descriptions of the artwork on Hearthstone cards. The descriptions focus exclusively on the visual elements of the art, including characters, scenery, objects, colors, and any notable actions or expressions. The aim is to help visually impaired players visualize the art as vividly as possible, enhancing their understanding and enjoyment of the game. However, the app can also be used to simply look up Hearthstone cards. This includes filtering by class and set.
 
-## Creating a project
+## Setup
 
-If you're seeing this, you've probably already done this step. Congrats!
+1. Clone the repository.
+2. Install the dependencies using `npm install`.
+3. Create a `.env` file and add your OpenAI API key as `OPENAI_API_KEY`.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## Scripts
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+- `npm run dev`: Starts the development server.
+- `npm run build`: Builds the project for production.
+- `npm run preview`: Serves the built project locally.
+- `npm run check`: Runs the type checker and linter.
+- `npm run format`: Formats the code using Prettier.
 
-## Developing
+## Contributing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Contributions are welcome. See `contributing.md` for more info.
 
-```bash
-npm run dev
+## License
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+This project is licensed under the terms of the MIT license.
