@@ -43,7 +43,9 @@
 </script>
 
 <nav class="pagination">
+  <p>Showing page {currentPage} of {totalPages}</p>
   <button on:click={previous} disabled={currentPage === 1}>Previous</button>
+  <button on:click={() => goToPage(1)} disabled={currentPage === 1}>First</button>
   {#each pageRange as page}
     <button
       class:active={page === currentPage}
@@ -53,6 +55,7 @@
       {page}
     </button>
   {/each}
+  <button on:click={() => goToPage(totalPages)} disabled={currentPage === totalPages}>Last</button>
   <button on:click={next} disabled={currentPage === totalPages}>Next</button>
 </nav>
 

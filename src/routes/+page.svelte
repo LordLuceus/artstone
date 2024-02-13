@@ -49,6 +49,7 @@
       <legend><h2>Sets</h2></legend>
       <select name="set">
         <option value="">All Sets</option>
+        <option value="standard">Standard Sets</option>
         {#each data.metadata.sets as s (s.id)}
           <option value={s.slug}>
             {s.name}
