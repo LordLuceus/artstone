@@ -1,7 +1,7 @@
 import { getHearthstoneMetadata } from "$lib/hearthstone/metadata";
 import { error } from "@sveltejs/kit";
 
-export const prerender = true;
+export const config = { runtime: "nodejs18.x" };
 
 export async function load() {
   try {

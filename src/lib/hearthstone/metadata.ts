@@ -8,7 +8,7 @@ export async function getHearthstoneMetadata() {
 
   if (!metadata) {
     metadata = await fetchHearthstoneMetadata();
-    await client.set("hearthstone-metadata", metadata, { ex: 86400 });
+    await client.set("hearthstone-metadata", metadata, { ex: 3600 });
   }
 
   return metadata;
