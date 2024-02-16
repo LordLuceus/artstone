@@ -25,13 +25,6 @@ export async function getCard(id: number) {
 
   card = addMetadata(card, metadata) as HearthstoneCardWithMetadata;
 
-  if (card.childIds && card.childIds.length > 0) {
-    (card as HearthstoneCardWithMetadata).relatedCards = await getRelatedCards(
-      card.childIds,
-      metadata
-    );
-  }
-
   return card as HearthstoneCardWithMetadata;
 }
 
@@ -40,7 +33,7 @@ async function fetchCard(id: number) {
   return data;
 }
 
-async function getRelatedCards(ids: number[], metadata: HearthstoneMetadata) {
+export async function getRelatedCards(ids: number[], metadata: HearthstoneMetadata) {
   const cards = await Promise.all(ids.map((id) => getRelatedCard(id, metadata)));
   return cards;
 }

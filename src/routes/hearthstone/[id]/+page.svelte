@@ -3,6 +3,7 @@
   import SvelteMarkdown from "svelte-markdown";
   import CardDetails from "./CardDetails.svelte";
   import Card from "../../Card.svelte";
+  import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
 
   export let data;
 
@@ -15,6 +16,10 @@
       { content: "Describe this card.", role: "user" },
       { options: { body: { regenerate, id: data.card.id, imageUrl: data.card.image } } }
     );
+
+    start = 0;
+    relatedCards = [];
+    getRelatedCards();
   }
 
   const handleNewDescriptionClick = () => {
@@ -24,6 +29,27 @@
   };
 
   $: description = $messages.findLast((m) => m.role === "assistant")?.content;
+
+  let relatedCards: HearthstoneCardWithMetadata[] = [];
+  let start = 0;
+  const limit = 20;
+  let loadCardError = false;
+
+  const getRelatedCards = async () => {
+    loadCardError = false;
+    const response = await fetch(
+      `/api/hearthstone/related?ids=${data.card.childIds?.join(",")}&start=${start}&limit=${limit}`
+    );
+
+    if (response.ok) {
+      const data = await response.json();
+      relatedCards = [...relatedCards, ...data.cards];
+      start += limit;
+    } else {
+      console.error("Failed to fetch related cards", response);
+      loadCardError = true;
+    }
+  };
 </script>
 
 <svelte:head>
@@ -48,13 +74,25 @@
       </p>
       <button on:click|preventDefault={handleNewDescriptionClick}>New description</button>
     {/if}
-    {#if data.card.relatedCards}
+    {#if data.card.childIds && data.card.childIds.length > 0}
       <h2>Related cards</h2>
-      <ul>
-        {#each data.card.relatedCards as relatedCard}
-          <li><Card card={relatedCard} /></li>
-        {/each}
-      </ul>
+      {#if relatedCards.length > 0}
+        <ul>
+          {#each relatedCards as card}
+            <li>
+              <Card {card} />
+            </li>
+          {/each}
+        </ul>
+        {#if relatedCards.length < data.card.childIds.length}
+          <button on:click={getRelatedCards}>Load more</button>
+        {/if}
+      {:else if loadCardError}
+        <p class="error">There was an error fetching related cards. Please try again.</p>
+        <button on:click|preventDefault={getRelatedCards}>Try again</button>
+      {:else}
+        <p>Loading related cards...</p>
+      {/if}
     {/if}
   {:else}
     <p>Card details will appear here.</p>
