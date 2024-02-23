@@ -1,5 +1,6 @@
 <script lang="ts">
   import { useChat } from "ai/svelte";
+  import { onMount } from "svelte";
   import SvelteMarkdown from "svelte-markdown";
   import CardDetails from "./CardDetails.svelte";
   import Card from "../../Card.svelte";
@@ -9,17 +10,13 @@
 
   let regenerate = false;
 
-  const { append, error, messages, reload, setMessages } = useChat({});
+  const { append, error, messages, reload, setMessages } = useChat();
 
   $: if (data.card) {
     append(
       { content: "Describe this card.", role: "user" },
       { options: { body: { regenerate, id: data.card.id, imageUrl: data.card.image } } }
     );
-
-    start = 0;
-    relatedCards = [];
-    getRelatedCards();
   }
 
   const handleNewDescriptionClick = () => {
@@ -34,9 +31,12 @@
   let start = 0;
   const limit = 20;
   let loadCardError = false;
+  let initialLoadComplete = false;
 
   const getRelatedCards = async () => {
     loadCardError = false;
+    if (!data.card.childIds) return;
+
     const response = await fetch(
       `/api/hearthstone/related?ids=${data.card.childIds?.join(",")}&start=${start}&limit=${limit}`
     );
@@ -50,6 +50,18 @@
       loadCardError = true;
     }
   };
+
+  onMount(() => {
+    getRelatedCards().then(() => {
+      initialLoadComplete = true;
+    });
+  });
+
+  $: if (data.card && initialLoadComplete) {
+    start = 0;
+    relatedCards = [];
+    getRelatedCards();
+  }
 </script>
 
 <svelte:head>
@@ -72,7 +84,7 @@
       <p class="message">
         <SvelteMarkdown source={description} />
       </p>
-      <button on:click|preventDefault={handleNewDescriptionClick}>New description</button>
+      <button on:click={handleNewDescriptionClick}>New description</button>
     {/if}
     {#if data.card.childIds && data.card.childIds.length > 0}
       <h2>Related cards</h2>
@@ -89,7 +101,7 @@
         {/if}
       {:else if loadCardError}
         <p class="error">There was an error fetching related cards. Please try again.</p>
-        <button on:click|preventDefault={getRelatedCards}>Try again</button>
+        <button on:click={getRelatedCards}>Try again</button>
       {:else}
         <p>Loading related cards...</p>
       {/if}
