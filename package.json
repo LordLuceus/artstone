@@ -30,6 +30,7 @@
   "type": "module",
   "dependencies": {
     "@sveltejs/adapter-vercel": "^3.0.3",
+    "@vercel/analytics": "^1.2.2",
     "@vercel/kv": "^1.0.0",
     "ai": "^2.2.20",
     "axios": "^1.6.1",
