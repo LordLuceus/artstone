@@ -1,6 +1,6 @@
 <script lang="ts">
   import { useChat } from "ai/svelte";
-  import { onMount } from "svelte";
+  import { afterNavigate } from "$app/navigation";
   import SvelteMarkdown from "svelte-markdown";
   import CardDetails from "./CardDetails.svelte";
   import Card from "../../Card.svelte";
@@ -31,37 +31,35 @@
   let start = 0;
   const limit = 20;
   let loadCardError = false;
-  let initialLoadComplete = false;
 
   const getRelatedCards = async () => {
     loadCardError = false;
     if (!data.card.childIds) return;
 
-    const response = await fetch(
-      `/api/hearthstone/related?ids=${data.card.childIds?.join(",")}&start=${start}&limit=${limit}`
-    );
+    try {
+      const response = await fetch(
+        `/api/hearthstone/related?ids=${data.card.childIds?.join(
+          ","
+        )}&start=${start}&limit=${limit}`
+      );
 
-    if (response.ok) {
-      const data = await response.json();
-      relatedCards = [...relatedCards, ...data.cards];
-      start += limit;
-    } else {
-      console.error("Failed to fetch related cards", response);
+      if (response.ok) {
+        const data = await response.json();
+        relatedCards = [...relatedCards, ...data.cards];
+        start += limit;
+      } else {
+        loadCardError = true;
+      }
+    } catch (err) {
       loadCardError = true;
     }
   };
 
-  onMount(() => {
-    getRelatedCards().then(() => {
-      initialLoadComplete = true;
-    });
-  });
-
-  $: if (data.card && initialLoadComplete) {
+  afterNavigate(() => {
     start = 0;
     relatedCards = [];
     getRelatedCards();
-  }
+  });
 </script>
 
 <svelte:head>
@@ -79,7 +77,7 @@
     <h2>Description</h2>
     {#if $error}
       <p class="error">There was an error fetching the description. Please try again.</p>
-      <button on:click|preventDefault={() => reload()}>Try again</button>
+      <button on:click={() => reload()}>Try again</button>
     {:else}
       <p class="message">
         <SvelteMarkdown source={description} />
