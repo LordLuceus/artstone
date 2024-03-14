@@ -25,6 +25,6 @@ export async function load({ url }) {
     };
   } catch (err) {
     console.error(err);
-    throw error(500, "Internal Server Error");
+    error(500, "Internal Server Error");
   }
 }

@@ -10,6 +10,6 @@ export async function load() {
     return { metadata };
   } catch (err) {
     console.error("Error fetching metadata", err);
-    throw error(500, "Error fetching metadata.");
+    error(500, "Error fetching metadata.");
   }
 }

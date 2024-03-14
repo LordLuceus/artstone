@@ -13,10 +13,10 @@ export async function load({ params }) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
   } catch (err: any) {
     if (err.response.status === 404) {
-      throw error(404, "Card not found.");
+      error(404, "Card not found.");
     }
 
     console.error(err);
-    throw error(500, "Internal Server Error");
+    error(500, "Internal Server Error");
   }
 }
