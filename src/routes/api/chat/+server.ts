@@ -1,11 +1,11 @@
-import prompt from "$lib/prompts/hs-prompt.md?raw";
-import OpenAI from "openai";
-import { OpenAIStream, StreamingTextResponse } from "ai";
 import { OPENAI_API_KEY } from "$env/static/private";
 import { getDescription, setDescription } from "$lib/descriptions/description";
-import { text, type RequestHandler } from "@sveltejs/kit";
-import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
+import prompt from "$lib/prompts/hs-prompt.md?raw";
 import { SupportedGames } from "$lib/types/games";
+import { text, type RequestHandler } from "@sveltejs/kit";
+import { OpenAIStream, StreamingTextResponse } from "ai";
+import OpenAI from "openai";
+import type { ChatCompletionMessageParam } from "openai/resources/index.mjs";
 
 const openai = new OpenAI({ apiKey: OPENAI_API_KEY });
 
@@ -37,7 +37,7 @@ export const POST = (async ({ request }) => {
   ];
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4-vision-preview",
+    model: "gpt-4-turbo",
     stream: true,
     messages,
     max_tokens: 3000
