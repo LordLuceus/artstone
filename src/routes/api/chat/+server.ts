@@ -37,10 +37,9 @@ export const POST = (async ({ request }) => {
   ];
 
   const response = await openai.chat.completions.create({
-    model: "gpt-4-turbo",
+    model: "gpt-4o",
     stream: true,
-    messages,
-    max_tokens: 3000
+    messages
   });
 
   const stream = OpenAIStream(response, {
