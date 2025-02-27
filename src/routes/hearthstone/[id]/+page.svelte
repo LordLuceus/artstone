@@ -1,27 +1,24 @@
 <script lang="ts">
-  import { useChat } from "ai/svelte";
   import { afterNavigate } from "$app/navigation";
-  import SvelteMarkdown from "svelte-markdown";
-  import CardDetails from "./CardDetails.svelte";
-  import Card from "../../Card.svelte";
   import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
+  import { useChat } from "@ai-sdk/svelte";
+  import SvelteMarkdown from "svelte-markdown";
+  import Card from "../../Card.svelte";
+  import CardDetails from "./CardDetails.svelte";
 
   export let data;
 
   let regenerate = false;
 
-  const { append, error, messages, reload, setMessages } = useChat();
+  const { append, error, messages, reload, setMessages } = useChat({ streamProtocol: "text" });
 
-  $: if (data.card) {
-    append(
-      { content: "Describe this card.", role: "user" },
-      { options: { body: { regenerate, id: data.card.id, imageUrl: data.card.image } } }
-    );
+  $: if (data.card.image) {
+    sendMessage();
   }
 
   const handleNewDescriptionClick = () => {
     regenerate = true;
-    reload({ options: { body: { regenerate, id: data.card.id, imageUrl: data.card.image } } });
+    sendMessage();
     regenerate = false;
   };
 
@@ -60,6 +57,16 @@
     relatedCards = [];
     getRelatedCards();
   });
+
+  function sendMessage() {
+    append(
+      {
+        content: "Describe this card.",
+        role: "user"
+      },
+      { body: { regenerate, id: data.card.id, imageUrl: data.card.image } }
+    );
+  }
 </script>
 
 <svelte:head>
@@ -77,6 +84,7 @@
     <h2>Description</h2>
     {#if $error}
       <p class="error">There was an error fetching the description. Please try again.</p>
+      <p class="error">{$error.message}</p>
       <button on:click={() => reload()}>Try again</button>
     {:else}
       <p class="message">

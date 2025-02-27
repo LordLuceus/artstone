@@ -1,14 +1,17 @@
-import { client } from "$lib/kv/client";
+import { redis } from "$lib/redis";
 import type { HearthstoneCard, HearthstoneCardWithMetadata } from "../types/hearthstone";
 import type { HearthstoneMetadata } from "../types/hearthstone-metadata";
 import { hearthstoneClient } from "./client";
 
 export async function getHearthstoneMetadata() {
-  let metadata = await client.get<HearthstoneMetadata>("hearthstone-metadata");
+  const cached = await redis.get("hearthstone-metadata");
+  let metadata: HearthstoneMetadata;
 
-  if (!metadata) {
+  if (!cached) {
     metadata = await fetchHearthstoneMetadata();
-    await client.set("hearthstone-metadata", metadata, { ex: 3600 });
+    await redis.set("hearthstone-metadata", JSON.stringify(metadata), "EX", 3600);
+  } else {
+    metadata = JSON.parse(cached);
   }
 
   return metadata;
@@ -58,6 +61,10 @@ function addCardMetadata(card: HearthstoneCard, metadata: HearthstoneMetadata) {
   cardWithMetadata.rarity = metadata.rarities.find((rarity) => rarity.id === card.rarityId);
   cardWithMetadata.keywords = metadata.keywords.filter((keyword) =>
     card.keywordIds?.includes(keyword.id)
+  );
+
+  cardWithMetadata.factions = metadata.factions.filter((faction) =>
+    card.factionId?.includes(faction.id)
   );
 
   return cardWithMetadata;

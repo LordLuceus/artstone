@@ -1,4 +1,4 @@
-import type { Set, Class, Rarity, Generic, Keyword } from "./hearthstone-metadata";
+import type { Class, Generic, Keyword, Rarity, Set } from "./hearthstone-metadata";
 
 export interface HearthstoneCardSearchResponse {
   cardCount: number;
@@ -34,6 +34,7 @@ export interface HearthstoneCard {
   multiTypeIds?: number[];
   spellSchoolId?: number;
   runeCost?: RuneCost;
+  factionId?: number[];
 }
 
 export interface RuneCost {
@@ -51,4 +52,5 @@ export interface HearthstoneCardWithMetadata extends HearthstoneCard {
   rarity?: Rarity;
   keywords?: Keyword[];
   relatedCards?: HearthstoneCardWithMetadata[];
+  factions?: Generic[];
 }

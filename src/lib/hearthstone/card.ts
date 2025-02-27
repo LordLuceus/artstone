@@ -1,4 +1,4 @@
-import { client } from "$lib/kv/client";
+import { redis } from "$lib/redis";
 import type {
   HearthstoneCard,
   HearthstoneCardSearchResponse,
@@ -11,16 +11,19 @@ import { addMetadata, getHearthstoneMetadata } from "./metadata";
 
 export async function getCard(id: number) {
   const metadata = await getHearthstoneMetadata();
-  let card = await client.get<HearthstoneCard>(`hearthstone-card:${id}`);
+  const cached = await redis.get(`hearthstone-card:${id}`);
+  let card: HearthstoneCard;
 
-  if (!card) {
+  if (!cached) {
     try {
       card = await fetchCard(id);
-      await client.set(`hearthstone-card:${card.id}`, card, { ex: 86400 });
+      await redis.set(`hearthstone-card:${card.id}`, JSON.stringify(card), "EX", 86400);
     } catch (error) {
       console.error(`Error fetching card data for id: ${id}`, error);
       throw error;
     }
+  } else {
+    card = JSON.parse(cached);
   }
 
   card = addMetadata(card, metadata) as HearthstoneCardWithMetadata;
@@ -39,10 +42,10 @@ export async function getRelatedCards(ids: number[], metadata: HearthstoneMetada
 }
 
 async function getRelatedCard(id: number, metadata: HearthstoneMetadata) {
-  const cached = await client.get<HearthstoneCard>(`hearthstone-card:${id}`);
+  const cached = await redis.get(`hearthstone-card:${id}`);
 
   if (cached) {
-    return addMetadata(cached, metadata) as HearthstoneCardWithMetadata;
+    return addMetadata(JSON.parse(cached), metadata) as HearthstoneCardWithMetadata;
   }
 
   const card = await fetchCard(id);

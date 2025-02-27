@@ -2,8 +2,6 @@ import { getRelatedCards } from "$lib/hearthstone/card";
 import { getHearthstoneMetadata } from "$lib/hearthstone/metadata";
 import { error, json, type RequestHandler } from "@sveltejs/kit";
 
-export const config = { runtime: "nodejs18.x" };
-
 export const GET = (async ({ url }) => {
   const ids = url.searchParams.get("ids");
   const start = Number(url.searchParams.get("start"));

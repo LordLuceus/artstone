@@ -20,6 +20,7 @@ export interface HearthstoneMetadata {
   filterableFields: string[];
   numericFields: string[];
   cardBackCategories: Generic[];
+  factions: Generic[];
 }
 
 export interface Generic {

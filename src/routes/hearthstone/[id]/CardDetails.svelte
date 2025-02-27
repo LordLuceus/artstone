@@ -1,6 +1,6 @@
 <script lang="ts">
-  import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
   import { formatRunes } from "$lib/hearthstone/rune-parser";
+  import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
 
   export let card: HearthstoneCardWithMetadata;
 </script>
@@ -42,6 +42,9 @@
     {/if}
     {#if card.runeCost}
       <li>Runes: {formatRunes(card.runeCost)}</li>
+    {/if}
+    {#if card.factions && card.factions.length > 0}
+      <li>Factions: {card.factions.map((f) => f.name).join(", ")}</li>
     {/if}
     {#if card.cardSet}
       <li>Set: {card.cardSet.name}</li>

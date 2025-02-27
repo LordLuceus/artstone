@@ -1,0 +1,21 @@
+services:
+  app:
+    image: ghcr.io/lordluceus/artstone:master
+    ports:
+      - 3000:3000
+    env_file:
+      - .env
+    container_name: artstone
+    restart: unless-stopped
+    depends_on:
+      - valkey
+
+  valkey:
+    image: valkey/valkey:latest # Use the official Valkey image
+    container_name: valkey-server
+    restart: unless-stopped
+    command: [ "valkey-server", "/usr/local/etc/redis.conf" ]
+    ports:
+      - 6379:6379
+    volumes:
+      - ./redis.conf:/usr/local/etc/redis.conf
