@@ -1,8 +1,6 @@
 import { getCard } from "$lib/hearthstone/card";
 import { error } from "@sveltejs/kit";
 
-export const config = { runtime: "nodejs18.x" };
-
 export async function load({ params }) {
   const { id } = params;
 
