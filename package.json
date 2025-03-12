@@ -34,7 +34,7 @@
     "@ai-sdk/svelte": "^1.1.23",
     "@sveltejs/adapter-node": "^5.2.12",
     "ai": "^4.1.46",
-    "axios": "^1.8.0",
+    "axios": "^1.8.3",
     "blizzard.js": "^4.6.0",
     "dotenv": "^16.4.7",
     "ioredis": "^5.5.0",
