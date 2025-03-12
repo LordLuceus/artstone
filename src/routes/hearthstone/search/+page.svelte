@@ -1,20 +1,18 @@
 <script lang="ts">
-  import Card from "../../Card.svelte";
-  import Pagination from "$lib/components/Pagination.svelte";
   import { goto } from "$app/navigation";
-  import { page } from "$app/stores";
-  import { get } from "svelte/store";
+  import { page } from "$app/state";
+  import Pagination from "$lib/components/Pagination.svelte";
+  import Card from "../../Card.svelte";
 
-  export let data;
+  let { data } = $props();
 
   function handlePageChange(event: CustomEvent<{ page: number }>) {
     const newPage = event.detail.page;
-    const currentPage = get(page);
 
-    if (currentPage.url.searchParams.get("page") !== newPage.toString()) {
-      const params = new URLSearchParams(currentPage.url.search);
+    if (page.url.searchParams.get("page") !== newPage.toString()) {
+      const params = new URLSearchParams(page.url.search);
       params.set("page", newPage.toString());
-      goto(`${currentPage.url.pathname}?${params.toString()}`);
+      goto(`${page.url.pathname}?${params.toString()}`);
     }
   }
 </script>

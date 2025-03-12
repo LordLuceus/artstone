@@ -2,19 +2,15 @@
   import { afterNavigate } from "$app/navigation";
   import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
   import { useChat } from "@ai-sdk/svelte";
-  import SvelteMarkdown from "svelte-markdown";
+  import Markdown from "svelte-exmarkdown";
   import Card from "../../Card.svelte";
   import CardDetails from "./CardDetails.svelte";
 
-  export let data;
+  let { data } = $props();
 
   let regenerate = false;
 
   const { append, error, messages, reload, setMessages } = useChat({ streamProtocol: "text" });
-
-  $: if (data.card.image) {
-    sendMessage();
-  }
 
   const handleNewDescriptionClick = () => {
     regenerate = true;
@@ -22,12 +18,10 @@
     regenerate = false;
   };
 
-  $: description = $messages.findLast((m) => m.role === "assistant")?.content;
-
-  let relatedCards: HearthstoneCardWithMetadata[] = [];
+  let relatedCards: HearthstoneCardWithMetadata[] = $state([]);
   let start = 0;
   const limit = 20;
-  let loadCardError = false;
+  let loadCardError = $state(false);
 
   const getRelatedCards = async () => {
     loadCardError = false;
@@ -67,6 +61,14 @@
       { body: { regenerate, id: data.card.id, imageUrl: data.card.image } }
     );
   }
+
+  $effect(() => {
+    if (data.card.image) {
+      sendMessage();
+    }
+  });
+
+  let description = $derived($messages.findLast((m) => m.role === "assistant")?.content);
 </script>
 
 <svelte:head>
@@ -81,16 +83,18 @@
 <main>
   {#if data.card}
     <CardDetails card={data.card} />
-    <h2>Description</h2>
-    {#if $error}
-      <p class="error">There was an error fetching the description. Please try again.</p>
-      <p class="error">{$error.message}</p>
-      <button on:click={() => reload()}>Try again</button>
-    {:else}
-      <p class="message">
-        <SvelteMarkdown source={description} />
-      </p>
-      <button on:click={handleNewDescriptionClick}>New description</button>
+    {#if description}
+      <h2>Description</h2>
+      {#if $error}
+        <p class="error">There was an error fetching the description. Please try again.</p>
+        <p class="error">{$error.message}</p>
+        <button onclick={() => reload()}>Try again</button>
+      {:else}
+        <p class="message">
+          <Markdown md={description} />
+        </p>
+        <button onclick={handleNewDescriptionClick}>New description</button>
+      {/if}
     {/if}
     {#if data.card.childIds && data.card.childIds.length > 0}
       <h2>Related cards</h2>
@@ -103,11 +107,11 @@
           {/each}
         </ul>
         {#if relatedCards.length < data.card.childIds.length}
-          <button on:click={getRelatedCards}>Load more</button>
+          <button onclick={getRelatedCards}>Load more</button>
         {/if}
       {:else if loadCardError}
         <p class="error">There was an error fetching related cards. Please try again.</p>
-        <button on:click={getRelatedCards}>Try again</button>
+        <button onclick={getRelatedCards}>Try again</button>
       {:else}
         <p>Loading related cards...</p>
       {/if}

@@ -1,9 +1,10 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
 
-  export let data;
+  let { data } = $props();
 
   function handleSubmit(event: SubmitEvent) {
+    event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
     const params = new URLSearchParams();
 
@@ -31,7 +32,7 @@
 <p>Hearthstone Card lookup and AI art descriptions</p>
 
 <section role="search" class="card-search">
-  <form class="search-form" on:submit|preventDefault={handleSubmit}>
+  <form class="search-form" onsubmit={handleSubmit}>
     <fieldset>
       <legend><h2>Classes</h2></legend>
       <ul>

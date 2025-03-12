@@ -2,7 +2,11 @@
   import { formatRunes } from "$lib/hearthstone/rune-parser";
   import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
 
-  export let card: HearthstoneCardWithMetadata;
+  interface Props {
+    card: HearthstoneCardWithMetadata;
+  }
+
+  let { card }: Props = $props();
 </script>
 
 <section class="card">
