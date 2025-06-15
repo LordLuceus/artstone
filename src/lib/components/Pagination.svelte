@@ -1,21 +1,14 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
-
-  
   interface Props {
-    // Props
     totalPages: number;
     currentPage: number;
+    onPageChange: (page: number) => void;
   }
 
-  let { totalPages, currentPage }: Props = $props();
+  let { totalPages, currentPage, onPageChange }: Props = $props();
 
-  // Event dispatcher for page change
-  const dispatch = createEventDispatcher();
-
-  // Functions
   function goToPage(page: number) {
-    dispatch("pageChange", { page });
+    onPageChange(page);
   }
 
   function previous() {
@@ -26,7 +19,7 @@
     if (currentPage < totalPages) goToPage(currentPage + 1);
   }
 
-  let pageRange = $derived((() => {
+  const pageRange = $derived.by(() => {
     let rangeSize = 10; // Max number of pages to display in the range
     let start = 1;
     let end = totalPages <= rangeSize ? totalPages : Math.min(start + rangeSize - 1, totalPages);
@@ -44,7 +37,7 @@
     }
 
     return Array.from({ length: end - start + 1 }, (_, i) => start + i);
-  })());
+  });
 </script>
 
 <nav class="pagination">

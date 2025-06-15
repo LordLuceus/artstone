@@ -6,9 +6,7 @@
 
   let { data } = $props();
 
-  function handlePageChange(event: CustomEvent<{ page: number }>) {
-    const newPage = event.detail.page;
-
+  function handlePageChange(newPage: number) {
     if (page.url.searchParams.get("page") !== newPage.toString()) {
       const params = new URLSearchParams(page.url.search);
       params.set("page", newPage.toString());
@@ -40,7 +38,7 @@
       <Pagination
         currentPage={data.page}
         totalPages={data.pageCount}
-        on:pageChange={handlePageChange}
+        onPageChange={handlePageChange}
       />
     {:else}
       <p>No cards found.</p>
