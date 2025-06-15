@@ -1,7 +1,7 @@
 <script lang="ts">
   import { afterNavigate } from "$app/navigation";
   import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
-  import { useChat } from "@ai-sdk/svelte";
+  import { Chat } from "@ai-sdk/svelte";
   import Markdown from "svelte-exmarkdown";
   import Card from "../../Card.svelte";
   import CardDetails from "./CardDetails.svelte";
@@ -10,7 +10,7 @@
 
   let regenerate = false;
 
-  const { append, error, messages, reload, setMessages } = useChat({ streamProtocol: "text" });
+  const chat = new Chat({ streamProtocol: "text" });
 
   const handleNewDescriptionClick = () => {
     regenerate = true;
@@ -53,7 +53,7 @@
   });
 
   function sendMessage() {
-    append(
+    chat.append(
       {
         content: "Describe this card.",
         role: "user"
@@ -68,7 +68,7 @@
     }
   });
 
-  let description = $derived($messages.findLast((m) => m.role === "assistant")?.content);
+  let description = $derived(chat.messages.findLast((m) => m.role === "assistant")?.content);
 </script>
 
 <svelte:head>
@@ -85,10 +85,10 @@
     <CardDetails card={data.card} />
     {#if description}
       <h2>Description</h2>
-      {#if $error}
+      {#if chat.error}
         <p class="error">There was an error fetching the description. Please try again.</p>
-        <p class="error">{$error.message}</p>
-        <button onclick={() => reload()}>Try again</button>
+        <p class="error">{chat.error.message}</p>
+        <button onclick={() => chat.reload()}>Try again</button>
       {:else}
         <p class="message">
           <Markdown md={description} />
