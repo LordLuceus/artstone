@@ -10,3 +10,5 @@ vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vercel
 redis.conf
+.letta/*
+!.letta/settings.json
