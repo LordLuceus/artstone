@@ -2,6 +2,7 @@
   import { afterNavigate } from "$app/navigation";
   import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
   import { Chat } from "@ai-sdk/svelte";
+  import { DefaultChatTransport } from "ai";
   import Markdown from "svelte-exmarkdown";
   import Card from "../../Card.svelte";
   import CardDetails from "./CardDetails.svelte";
@@ -10,7 +11,7 @@
 
   let regenerate = false;
 
-  const chat = new Chat({ streamProtocol: "text" });
+  const chat = new Chat({ transport: new DefaultChatTransport({ api: "/api/chat" }) });
 
   const handleNewDescriptionClick = () => {
     regenerate = true;
@@ -53,22 +54,28 @@
   });
 
   function sendMessage() {
-    chat.append(
+    chat.sendMessage(
       {
-        content: "Describe this card.",
+        parts: [{ type: "text", text: "Describe this card." }],
         role: "user"
       },
-      { body: { regenerate, id: data.card.id, imageUrl: data.card.image } }
+      { body: { regenerate, cardId: data.card.id, imageUrl: data.card.image } }
     );
   }
 
+  let lastCardId = $state<number | null>(null);
+
   $effect(() => {
-    if (data.card.image) {
+    if (data.card.image && data.card.id !== lastCardId) {
+      lastCardId = data.card.id;
       sendMessage();
     }
   });
 
-  let description = $derived(chat.messages.findLast((m) => m.role === "assistant")?.content);
+  let description = $derived(
+    chat.messages.findLast((m) => m.role === "assistant")?.parts.find((p) => p.type === "text")
+      ?.text
+  );
 </script>
 
 <svelte:head>
@@ -88,7 +95,7 @@
       {#if chat.error}
         <p class="error">There was an error fetching the description. Please try again.</p>
         <p class="error">{chat.error.message}</p>
-        <button onclick={() => chat.reload()}>Try again</button>
+        <button onclick={() => chat.regenerate()}>Try again</button>
       {:else}
         <p class="message">
           <Markdown md={description} />
