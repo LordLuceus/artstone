@@ -15,6 +15,8 @@
 
   const handleNewDescriptionClick = () => {
     regenerate = true;
+    // Clear existing messages to hide old description immediately
+    chat.messages = [];
     sendMessage();
     regenerate = false;
   };
@@ -76,6 +78,8 @@
     chat.messages.findLast((m) => m.role === "assistant")?.parts.find((p) => p.type === "text")
       ?.text
   );
+
+  let isGenerating = $derived(chat.status === "streaming" || chat.status === "submitted");
 </script>
 
 <svelte:head>
@@ -90,17 +94,19 @@
 <main>
   {#if data.card}
     <CardDetails card={data.card} />
-    {#if description}
+    {#if description || isGenerating}
       <h2>Description</h2>
       {#if chat.error}
         <p class="error">There was an error fetching the description. Please try again.</p>
         <p class="error">{chat.error.message}</p>
         <button onclick={() => chat.regenerate()}>Try again</button>
-      {:else}
+      {:else if isGenerating && !description}
+        <p class="message">Generating description...</p>
+      {:else if description}
         <p class="message">
           <Markdown md={description} />
         </p>
-        <button onclick={handleNewDescriptionClick}>New description</button>
+        <button onclick={handleNewDescriptionClick} disabled={isGenerating}>New description</button>
       {/if}
     {/if}
     {#if data.card.childIds && data.card.childIds.length > 0}
