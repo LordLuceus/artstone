@@ -1,16 +1,13 @@
-import { env } from "$env/dynamic/private";
 import { getDescription, setDescription } from "$lib/descriptions/description";
 import prompt from "$lib/prompts/hs-prompt.md?raw";
 import { SupportedGames } from "$lib/types/games";
-import { createOpenAI } from "@ai-sdk/openai";
+import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { type RequestHandler } from "@sveltejs/kit";
 import { streamText, createUIMessageStream, createUIMessageStreamResponse } from "ai";
-
-const openai = createOpenAI({
-  apiKey: env.OPENAI_API_KEY
-});
+import { env } from "$env/dynamic/private";
 
 export const POST = (async ({ request }) => {
+  const googleAI = createGoogleGenerativeAI({ apiKey: env.GEMINI_API_KEY });
   const { regenerate, cardId, imageUrl } = await request.json();
 
   if (!regenerate) {
@@ -49,7 +46,7 @@ export const POST = (async ({ request }) => {
   }
 
   const result = streamText({
-    model: openai("gpt-4o-2024-11-20"),
+    model: googleAI("gemini-3-pro-preview"),
     messages: [
       {
         role: "user",

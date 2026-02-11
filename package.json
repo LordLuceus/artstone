@@ -31,7 +31,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@ai-sdk/openai": "^3.0.26",
+    "@ai-sdk/google": "^3.0.24",
     "@ai-sdk/svelte": "^4.0.78",
     "@sveltejs/adapter-node": "^5.5.2",
     "ai": "^6.0.78",
