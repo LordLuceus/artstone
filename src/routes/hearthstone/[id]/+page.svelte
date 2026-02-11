@@ -70,6 +70,8 @@
   $effect(() => {
     if (data.card.image && data.card.id !== lastCardId) {
       lastCardId = data.card.id;
+      // Clear messages when navigating to a new card
+      chat.messages = [];
       sendMessage();
     }
   });
