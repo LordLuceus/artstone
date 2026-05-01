@@ -64,8 +64,10 @@
         totalPages={data.pageCount}
         onPageChange={handlePageChange}
       />
-    {:else}
+    {:else if data.page > 0}
       <p>No cards found.</p>
+    {:else}
+      <p>Use the search form above to find cards.</p>
     {/if}
   {/if}
 </main>
