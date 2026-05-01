@@ -24,6 +24,9 @@ export interface ScryfallCard {
   collector_number?: string;
   rarity?: string;
   artist?: string;
+  power?: string;
+  toughness?: string;
+  loyalty?: string;
   related_uris?: Record<string, string>;
   prints_search_uri?: string;
 }

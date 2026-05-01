@@ -19,6 +19,12 @@
     {#if card.type_line}
       <li>Type: {card.type_line}</li>
     {/if}
+    {#if card.power}
+      <li>Power / Toughness: {card.power} / {card.toughness}</li>
+    {/if}
+    {#if card.loyalty}
+      <li>Loyalty: {card.loyalty}</li>
+    {/if}
     {#if card.rarity}
       <li>Rarity: {card.rarity}</li>
     {/if}
