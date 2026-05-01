@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { toDisplayCard } from "$lib/hearthstone/display";
   import Pagination from "$lib/components/Pagination.svelte";
   import Card from "../../Card.svelte";
 
@@ -18,18 +17,8 @@
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
     const formData = new FormData(event.target as HTMLFormElement);
-    const params = new URLSearchParams();
-
-    formData.forEach((value, key) => {
-      if (params.has(key)) {
-        params.set(key, `${params.get(key)},${value}`);
-      } else {
-        params.set(key, value.toString());
-      }
-    });
-
-    params.set("page", "1");
-    const url = `/hearthstone/search?${params.toString()}`;
+    const query = formData.get("query")?.toString() || "";
+    const url = `/magic/search?query=${encodeURIComponent(query)}&page=1`;
     goto(url);
   }
 </script>
@@ -37,10 +26,10 @@
 <svelte:head>
   <title
     >{data.page
-      ? `Hearthstone Card Search | Page ${data.page} | Artstone`
-      : "Hearthstone Card Search | Artstone"}</title
+      ? `Magic Card Search | Page ${data.page} | Artstone`
+      : "Magic Card Search | Artstone"}</title
   >
-  <meta name="description" content="Hearthstone card search" />
+  <meta name="description" content="Magic: The Gathering card search" />
 </svelte:head>
 
 <nav>
@@ -50,32 +39,12 @@
 <main>
   <section role="search" class="card-search">
     <form class="search-form" onsubmit={handleSubmit}>
-      <fieldset>
-        <legend><h2>Classes</h2></legend>
-        <ul>
-          {#each data.metadata.classes as c (c.id)}
-            <li>
-              <label>
-                <input type="checkbox" name="class" value={c.slug} />
-                {c.name}
-              </label>
-            </li>
-          {/each}
-        </ul>
-      </fieldset>
-      <fieldset>
-        <legend><h2>Sets</h2></legend>
-        <select name="set">
-          <option value="">All Sets</option>
-          <option value="standard">Standard Sets</option>
-          {#each data.metadata.sets as s (s.id)}
-            <option value={s.slug}>
-              {s.name}
-            </option>
-          {/each}
-        </select>
-      </fieldset>
-      <input type="text" name="query" placeholder="Search for cards" autocomplete="off" />
+      <input
+        type="text"
+        name="query"
+        placeholder="Search for cards (e.g. t:creature c:U)"
+        autocomplete="off"
+      />
       <button type="submit">Search</button>
     </form>
   </section>
@@ -86,7 +55,7 @@
         <h2>Search Results</h2>
         <ul>
           {#each data.cards as card (card.id)}
-            <li><Card card={toDisplayCard(card)} game="hearthstone" /></li>
+            <li><Card {card} game="magic" /></li>
           {/each}
         </ul>
       </div>
@@ -102,6 +71,20 @@
 </main>
 
 <style>
+  .card-search {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-bottom: 2rem;
+  }
+
+  .search-form {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
   .cards {
     display: flex;
     flex-wrap: wrap;

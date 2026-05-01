@@ -1,19 +1,22 @@
 <script lang="ts">
-  import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
+  import type { DisplayCard } from "$lib/types/display-card";
 
   interface Props {
-    card: HearthstoneCardWithMetadata;
+    card: DisplayCard;
+    game: string;
   }
 
-  let { card }: Props = $props();
+  let { card, game }: Props = $props();
 </script>
 
 <section class="card">
-  <a href={`/hearthstone/${card.id}`}>
+  <a href={`/${game}/${card.id}`}>
     <img src={card?.image} alt={card.name} />
-    <h3>{card.name}{card.cardSet ? ` (${card.cardSet.name})` : ""}</h3>
+    <h3>{card.name}{card.setName ? ` (${card.setName})` : ""}</h3>
   </a>
-  <p>{@html card.text}</p>
+  {#if card.text}
+    <p>{@html card.text}</p>
+  {/if}
 </section>
 
 <style>

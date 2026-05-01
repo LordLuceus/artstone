@@ -1,13 +1,9 @@
 <script lang="ts">
-  import { afterNavigate } from "$app/navigation";
-  import { toDisplayCard } from "$lib/hearthstone/display";
-  import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
-  import { SupportedGames } from "$lib/types/games";
   import { Chat } from "@ai-sdk/svelte";
   import { DefaultChatTransport } from "ai";
   import Markdown from "svelte-exmarkdown";
-  import Card from "../../Card.svelte";
   import CardDetails from "./CardDetails.svelte";
+  import { SupportedGames } from "$lib/types/games";
 
   let { data } = $props();
 
@@ -17,45 +13,10 @@
 
   const handleNewDescriptionClick = () => {
     regenerate = true;
-    // Clear existing messages to hide old description immediately
     chat.messages = [];
     sendMessage();
     regenerate = false;
   };
-
-  let relatedCards: HearthstoneCardWithMetadata[] = $state([]);
-  let start = 0;
-  const limit = 20;
-  let loadCardError = $state(false);
-
-  const getRelatedCards = async () => {
-    loadCardError = false;
-    if (!data.card.childIds) return;
-
-    try {
-      const response = await fetch(
-        `/api/hearthstone/related?ids=${data.card.childIds?.join(
-          ","
-        )}&start=${start}&limit=${limit}`
-      );
-
-      if (response.ok) {
-        const data = await response.json();
-        relatedCards = [...relatedCards, ...data.cards];
-        start += limit;
-      } else {
-        loadCardError = true;
-      }
-    } catch (err) {
-      loadCardError = true;
-    }
-  };
-
-  afterNavigate(() => {
-    start = 0;
-    relatedCards = [];
-    getRelatedCards();
-  });
 
   function sendMessage() {
     chat.sendMessage(
@@ -67,19 +28,18 @@
         body: {
           regenerate,
           cardId: data.card.id,
-          imageUrl: data.card.image,
-          game: SupportedGames.Hearthstone
+          imageUrl: data.card.image_uris?.normal,
+          game: SupportedGames.Magic
         }
       }
     );
   }
 
-  let lastCardId = $state<number | null>(null);
+  let lastCardId = $state<string | null>(null);
 
   $effect(() => {
-    if (data.card.image && data.card.id !== lastCardId) {
+    if (data.card.image_uris?.normal && data.card.id !== lastCardId) {
       lastCardId = data.card.id;
-      // Clear messages when navigating to a new card
       chat.messages = [];
       sendMessage();
     }
@@ -118,26 +78,6 @@
           <Markdown md={description} />
         </p>
         <button onclick={handleNewDescriptionClick} disabled={isGenerating}>New description</button>
-      {/if}
-    {/if}
-    {#if data.card.childIds && data.card.childIds.length > 0}
-      <h2>Related cards</h2>
-      {#if relatedCards.length > 0}
-        <ul>
-          {#each relatedCards as card}
-            <li>
-              <Card card={toDisplayCard(card)} game="hearthstone" />
-            </li>
-          {/each}
-        </ul>
-        {#if relatedCards.length < data.card.childIds.length}
-          <button onclick={getRelatedCards}>Load more</button>
-        {/if}
-      {:else if loadCardError}
-        <p class="error">There was an error fetching related cards. Please try again.</p>
-        <button onclick={getRelatedCards}>Try again</button>
-      {:else}
-        <p>Loading related cards...</p>
       {/if}
     {/if}
   {:else}
@@ -190,11 +130,5 @@
 
   .error {
     color: red;
-  }
-
-  ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
   }
 </style>

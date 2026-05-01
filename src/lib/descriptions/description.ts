@@ -1,7 +1,7 @@
 import { redis } from "$lib/redis";
 import type { SupportedGames } from "$lib/types/games";
 
-export async function getDescription(game: SupportedGames, id: number) {
+export async function getDescription(game: SupportedGames, id: number | string) {
   const description = await redis.get(`${game}-card:${id}:description`);
 
   if (!description) {
@@ -11,6 +11,10 @@ export async function getDescription(game: SupportedGames, id: number) {
   return description;
 }
 
-export async function setDescription(game: SupportedGames, id: number, description: string) {
+export async function setDescription(
+  game: SupportedGames,
+  id: number | string,
+  description: string
+) {
   await redis.set(`${game}-card:${id}:description`, description);
 }
