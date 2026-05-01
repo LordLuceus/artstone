@@ -53,6 +53,19 @@ export async function getMagicCard(id: string): Promise<ScryfallCard> {
   return card;
 }
 
+export async function getRandomMagicCard(): Promise<ScryfallCard> {
+  const response = await fetch(`${SCRYFALL_BASE}/cards/random`, {
+    headers: { "User-Agent": "Artstone/1.0", Accept: "application/json" }
+  });
+
+  if (!response.ok) {
+    throw new Error(`Scryfall random card failed: ${response.status}`);
+  }
+
+  const card: ScryfallCard = await response.json();
+  return card;
+}
+
 function toDisplayCard(card: ScryfallCard): DisplayCard {
   return {
     id: card.id,

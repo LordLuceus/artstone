@@ -84,3 +84,33 @@ function filterCards(data: HearthstoneCardSearchResponse, metadata: HearthstoneM
   const result = cardsWithMetadata.filter((card) => card.cardSet);
   return result;
 }
+
+export async function getRandomCard(): Promise<HearthstoneCardWithMetadata> {
+  const metadata = await getHearthstoneMetadata();
+
+  // First search to get total page count
+  const { data: firstPage } = await hearthstoneClient.cardSearch<HearthstoneCardSearchResponse>({
+    gameMode: "constructed",
+    collectible: 1,
+    page: 1,
+    pageSize: 20
+  });
+
+  const totalPages = firstPage.pageCount;
+  const randomPage = Math.floor(Math.random() * totalPages) + 1;
+
+  const { data } = await hearthstoneClient.cardSearch<HearthstoneCardSearchResponse>({
+    gameMode: "constructed",
+    collectible: 1,
+    page: randomPage,
+    pageSize: 20
+  });
+
+  const cards = filterCards(data, metadata);
+  if (cards.length === 0) {
+    throw new Error("No cards found");
+  }
+
+  const randomIndex = Math.floor(Math.random() * cards.length);
+  return cards[randomIndex];
+}

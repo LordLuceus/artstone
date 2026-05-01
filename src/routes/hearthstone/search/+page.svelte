@@ -32,6 +32,14 @@
     const url = `/hearthstone/search?${params.toString()}`;
     goto(url);
   }
+
+  async function handleRandomCard() {
+    const response = await fetch("/api/hearthstone/random");
+    if (response.ok) {
+      const { id } = await response.json();
+      goto(`/hearthstone/${id}`);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -77,6 +85,7 @@
       </fieldset>
       <input type="text" name="query" placeholder="Search for cards" autocomplete="off" />
       <button type="submit">Search</button>
+      <button type="button" onclick={handleRandomCard}>Random card</button>
     </form>
   </section>
 

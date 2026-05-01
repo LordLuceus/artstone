@@ -21,6 +21,14 @@
     const url = `/magic/search?query=${encodeURIComponent(query)}&page=1`;
     goto(url);
   }
+
+  async function handleRandomCard() {
+    const response = await fetch("/api/magic/random");
+    if (response.ok) {
+      const { id } = await response.json();
+      goto(`/magic/${id}`);
+    }
+  }
 </script>
 
 <svelte:head>
@@ -46,6 +54,7 @@
         autocomplete="off"
       />
       <button type="submit">Search</button>
+      <button type="button" onclick={handleRandomCard}>Random card</button>
     </form>
   </section>
 
