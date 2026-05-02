@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { stripHtml } from "$lib/helpers/html";
   import type { DisplayCard } from "$lib/types/display-card";
 
   interface Props {
@@ -15,7 +16,7 @@
     <h3>{card.name}{card.setName ? ` (${card.setName})` : ""}</h3>
   </a>
   {#if card.text}
-    <p>{@html card.text}</p>
+    <p>{stripHtml(card.text)}</p>
   {/if}
 </section>
 

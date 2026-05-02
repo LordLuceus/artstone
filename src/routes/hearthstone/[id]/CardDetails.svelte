@@ -1,5 +1,6 @@
 <script lang="ts">
   import { formatRunes } from "$lib/hearthstone/rune-parser";
+  import { stripHtml } from "$lib/helpers/html";
   import type { HearthstoneCardWithMetadata } from "$lib/types/hearthstone";
 
   interface Props {
@@ -60,11 +61,11 @@
 
   {#if card.text}
     <h2>Card Text</h2>
-    <p>{@html card.text}</p>
+    <p>{stripHtml(card.text)}</p>
   {/if}
   {#if card.flavorText}
     <h2>Flavour Text</h2>
-    <p>{@html card.flavorText}</p>
+    <p>{stripHtml(card.flavorText)}</p>
   {/if}
 </section>
 

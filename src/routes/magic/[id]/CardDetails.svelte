@@ -41,11 +41,11 @@
 
   {#if card.oracle_text}
     <h2>Card Text</h2>
-    <p>{@html card.oracle_text.replace(/\n/g, "<br />")}</p>
+    <p style="white-space: pre-wrap">{card.oracle_text}</p>
   {/if}
   {#if card.flavor_text}
     <h2>Flavour Text</h2>
-    <p>{@html card.flavor_text.replace(/\n/g, "<br />")}</p>
+    <p style="white-space: pre-wrap">{card.flavor_text}</p>
   {/if}
 </section>
 
