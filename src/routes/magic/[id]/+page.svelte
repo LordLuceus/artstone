@@ -1,5 +1,6 @@
 <script lang="ts">
   import { getCardImage } from "$lib/magic/card";
+  import type { ScryfallCard } from "$lib/magic/types";
   import { Chat } from "@ai-sdk/svelte";
   import { DefaultChatTransport } from "ai";
   import Markdown from "svelte-exmarkdown";
@@ -9,6 +10,7 @@
   let { data } = $props();
 
   let regenerate = false;
+  let faceIndex = $state(0);
 
   const chat = new Chat({ transport: new DefaultChatTransport({ api: "/api/chat" }) });
 
@@ -18,6 +20,10 @@
     sendMessage();
     regenerate = false;
   };
+
+  function getFaceImage(card: ScryfallCard, index: number): string | undefined {
+    return card.card_faces?.[index]?.image_uris?.normal ?? getCardImage(card);
+  }
 
   function sendMessage() {
     chat.sendMessage(
@@ -29,7 +35,7 @@
         body: {
           regenerate,
           cardId: data.card.id,
-          imageUrl: getCardImage(data.card),
+          imageUrl: getFaceImage(data.card, faceIndex),
           game: SupportedGames.Magic
         }
       }
@@ -37,10 +43,15 @@
   }
 
   let lastCardId = $state<string | null>(null);
+  let lastFaceIndex = $state<number | null>(null);
 
   $effect(() => {
-    if (getCardImage(data.card) && data.card.id !== lastCardId) {
+    if (
+      getFaceImage(data.card, faceIndex) &&
+      (data.card.id !== lastCardId || faceIndex !== lastFaceIndex)
+    ) {
       lastCardId = data.card.id;
+      lastFaceIndex = faceIndex;
       chat.messages = [];
       sendMessage();
     }
@@ -65,7 +76,12 @@
 
 <main>
   {#if data.card}
-    <CardDetails card={data.card} />
+    {#if data.card.card_faces && data.card.card_faces.length > 1}
+      <button type="button" onclick={() => (faceIndex = faceIndex === 0 ? 1 : 0)}>
+        Flip card
+      </button>
+    {/if}
+    <CardDetails card={data.card} {faceIndex} />
     {#if description || isGenerating}
       <h2>Description</h2>
       {#if chat.error}

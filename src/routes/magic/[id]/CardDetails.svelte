@@ -1,15 +1,15 @@
 <script lang="ts">
-  import { getCardImage } from "$lib/magic/card";
   import type { ScryfallCard, ScryfallCardFace } from "$lib/magic/types";
 
   interface Props {
     card: ScryfallCard;
+    faceIndex: number;
   }
 
-  let { card }: Props = $props();
+  let { card, faceIndex }: Props = $props();
 
   let face = $derived<ScryfallCardFace | undefined>(
-    card.card_faces && card.card_faces.length > 0 ? card.card_faces[0] : undefined
+    card.card_faces && card.card_faces.length > faceIndex ? card.card_faces[faceIndex] : undefined
   );
 
   let name = $derived(face?.name ?? card.name);
@@ -20,11 +20,14 @@
   let loyalty = $derived(face?.loyalty ?? card.loyalty);
   let oracleText = $derived(face?.oracle_text ?? card.oracle_text);
   let flavorText = $derived(face?.flavor_text ?? card.flavor_text);
+  let image = $derived(
+    face?.image_uris?.normal ?? card.image_uris?.normal ?? card.card_faces?.[0]?.image_uris?.normal
+  );
 </script>
 
 <section class="card">
   <h1>{name}</h1>
-  <img src={getCardImage(card)} alt={name} />
+  <img src={image} alt={name} />
   <h2>Details</h2>
   <ul>
     {#if manaCost}
