@@ -1,10 +1,23 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
+  import { magicColours, magicFormats } from "$lib/magic/card";
   import Pagination from "$lib/components/Pagination.svelte";
   import Card from "../../Card.svelte";
 
   let { data } = $props();
+
+  let query = $state("");
+  let selectedColours = $state<string[]>([]);
+  let selectedSet = $state("");
+  let selectedFormat = $state("");
+
+  let canSearch = $derived(
+    query.trim().length > 0 ||
+      selectedColours.length > 0 ||
+      selectedSet !== "" ||
+      selectedFormat !== ""
+  );
 
   function handlePageChange(newPage: number) {
     if (page.url.searchParams.get("page") !== newPage.toString()) {
@@ -16,10 +29,17 @@
 
   function handleSubmit(event: SubmitEvent) {
     event.preventDefault();
-    const formData = new FormData(event.target as HTMLFormElement);
-    const query = formData.get("query")?.toString() || "";
-    const url = `/magic/search?query=${encodeURIComponent(query)}&page=1`;
-    goto(url);
+    if (!canSearch) return;
+
+    const params = new URLSearchParams();
+
+    if (query.trim()) params.set("query", query.trim());
+    selectedColours.forEach((c) => params.append("colour", c));
+    if (selectedSet) params.set("set", selectedSet);
+    if (selectedFormat) params.set("format", selectedFormat);
+
+    params.set("page", "1");
+    goto(`/magic/search?${params.toString()}`);
   }
 
   async function handleRandomCard() {
@@ -50,10 +70,41 @@
       <input
         type="text"
         name="query"
-        placeholder="Search for cards (e.g. t:creature c:U)"
+        placeholder="Search for cards"
         autocomplete="off"
+        bind:value={query}
       />
-      <button type="submit">Search</button>
+      <fieldset>
+        <legend>Colours</legend>
+        <ul>
+          {#each magicColours as c}
+            <li>
+              <label>
+                <input type="checkbox" value={c.value} bind:group={selectedColours} />
+                {c.label}
+              </label>
+            </li>
+          {/each}
+        </ul>
+      </fieldset>
+      <fieldset>
+        <legend>Set</legend>
+        <select bind:value={selectedSet}>
+          <option value="">All Sets</option>
+          {#each data.sets as s}
+            <option value={s.code}>{s.name}</option>
+          {/each}
+        </select>
+      </fieldset>
+      <fieldset>
+        <legend>Format</legend>
+        <select bind:value={selectedFormat}>
+          {#each magicFormats as f}
+            <option value={f.value}>{f.label}</option>
+          {/each}
+        </select>
+      </fieldset>
+      <button type="submit" disabled={!canSearch}>Search</button>
       <button type="button" onclick={handleRandomCard}>Random card</button>
     </form>
   </section>
@@ -94,6 +145,24 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
+  }
+
+  .search-form fieldset {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .search-form fieldset ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
   }
 
   .cards {
