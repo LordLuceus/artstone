@@ -15,13 +15,13 @@ const prompts: Record<SupportedGames, string> = {
 
 export const POST = (async ({ request }) => {
   const googleAI = createGoogleGenerativeAI({ apiKey: env.GEMINI_API_KEY });
-  const { regenerate, cardId, imageUrl, game } = await request.json();
+  const { regenerate, cardId, imageUrl, game, face } = await request.json();
 
   const gameKey = (game as SupportedGames) || SupportedGames.Hearthstone;
   const prompt = prompts[gameKey];
 
   if (!regenerate) {
-    const description = await getDescription(gameKey, cardId);
+    const description = await getDescription(gameKey, cardId, face);
 
     if (description) {
       const messageId = "cached-" + Date.now();
@@ -72,7 +72,7 @@ export const POST = (async ({ request }) => {
     ],
     system: prompt,
     temperature: 1.0,
-    onFinish: async ({ text }) => await setDescription(gameKey, cardId, text)
+    onFinish: async ({ text }) => await setDescription(gameKey, cardId, text, face)
   });
 
   return createUIMessageStreamResponse({ stream: result.toUIMessageStream() });

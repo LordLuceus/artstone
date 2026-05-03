@@ -36,7 +36,8 @@
           regenerate,
           cardId: data.card.id,
           imageUrl: getFaceImage(data.card, faceIndex),
-          game: SupportedGames.Magic
+          game: SupportedGames.Magic,
+          face: faceIndex
         }
       }
     );
