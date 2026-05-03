@@ -1,29 +1,43 @@
 <script lang="ts">
-  import type { ScryfallCard } from "$lib/magic/types";
+  import { getCardImage } from "$lib/magic/card";
+  import type { ScryfallCard, ScryfallCardFace } from "$lib/magic/types";
 
   interface Props {
     card: ScryfallCard;
   }
 
   let { card }: Props = $props();
+
+  let face = $derived<ScryfallCardFace | undefined>(
+    card.card_faces && card.card_faces.length > 0 ? card.card_faces[0] : undefined
+  );
+
+  let name = $derived(face?.name ?? card.name);
+  let manaCost = $derived(face?.mana_cost ?? card.mana_cost);
+  let typeLine = $derived(face?.type_line ?? card.type_line);
+  let power = $derived(face?.power ?? card.power);
+  let toughness = $derived(face?.toughness ?? card.toughness);
+  let loyalty = $derived(face?.loyalty ?? card.loyalty);
+  let oracleText = $derived(face?.oracle_text ?? card.oracle_text);
+  let flavorText = $derived(face?.flavor_text ?? card.flavor_text);
 </script>
 
 <section class="card">
-  <h1>{card.name}</h1>
-  <img src={card.image_uris?.normal} alt={card.name} />
+  <h1>{name}</h1>
+  <img src={getCardImage(card)} alt={name} />
   <h2>Details</h2>
   <ul>
-    {#if card.mana_cost}
-      <li>Mana Cost: {card.mana_cost}</li>
+    {#if manaCost}
+      <li>Mana Cost: {manaCost}</li>
     {/if}
-    {#if card.type_line}
-      <li>Type: {card.type_line}</li>
+    {#if typeLine}
+      <li>Type: {typeLine}</li>
     {/if}
-    {#if card.power}
-      <li>Power / Toughness: {card.power} / {card.toughness}</li>
+    {#if power}
+      <li>Power / Toughness: {power} / {toughness}</li>
     {/if}
-    {#if card.loyalty}
-      <li>Loyalty: {card.loyalty}</li>
+    {#if loyalty}
+      <li>Loyalty: {loyalty}</li>
     {/if}
     {#if card.rarity}
       <li>Rarity: {card.rarity}</li>
@@ -39,13 +53,13 @@
     {/if}
   </ul>
 
-  {#if card.oracle_text}
+  {#if oracleText}
     <h2>Card Text</h2>
-    <p style="white-space: pre-wrap">{card.oracle_text}</p>
+    <p style="white-space: pre-wrap">{oracleText}</p>
   {/if}
-  {#if card.flavor_text}
+  {#if flavorText}
     <h2>Flavour Text</h2>
-    <p style="white-space: pre-wrap">{card.flavor_text}</p>
+    <p style="white-space: pre-wrap">{flavorText}</p>
   {/if}
 </section>
 

@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getCardImage } from "$lib/magic/card";
   import { Chat } from "@ai-sdk/svelte";
   import { DefaultChatTransport } from "ai";
   import Markdown from "svelte-exmarkdown";
@@ -28,7 +29,7 @@
         body: {
           regenerate,
           cardId: data.card.id,
-          imageUrl: data.card.image_uris?.normal,
+          imageUrl: getCardImage(data.card),
           game: SupportedGames.Magic
         }
       }
@@ -38,7 +39,7 @@
   let lastCardId = $state<string | null>(null);
 
   $effect(() => {
-    if (data.card.image_uris?.normal && data.card.id !== lastCardId) {
+    if (getCardImage(data.card) && data.card.id !== lastCardId) {
       lastCardId = data.card.id;
       chat.messages = [];
       sendMessage();

@@ -8,6 +8,7 @@ export interface ScryfallSearchResponse {
 export interface ScryfallCard {
   id: string;
   name: string;
+  layout?: string;
   image_uris?: {
     small?: string;
     normal?: string;
@@ -16,6 +17,7 @@ export interface ScryfallCard {
     art_crop?: string;
     border_crop?: string;
   };
+  card_faces?: ScryfallCardFace[];
   mana_cost?: string;
   type_line?: string;
   oracle_text?: string;
@@ -29,4 +31,23 @@ export interface ScryfallCard {
   loyalty?: string;
   related_uris?: Record<string, string>;
   prints_search_uri?: string;
+}
+
+export interface ScryfallCardFace {
+  name?: string;
+  image_uris?: {
+    small?: string;
+    normal?: string;
+    large?: string;
+    png?: string;
+    art_crop?: string;
+    border_crop?: string;
+  };
+  mana_cost?: string;
+  type_line?: string;
+  oracle_text?: string;
+  flavor_text?: string;
+  power?: string;
+  toughness?: string;
+  loyalty?: string;
 }

@@ -104,12 +104,16 @@ export async function searchMagicCards(
 
   const data: ScryfallSearchResponse = await response.json();
 
-  const cards = data.data.filter((card) => card.image_uris?.normal).map(toDisplayCard);
+  const cards = data.data.filter((card) => getCardImage(card)).map(toDisplayCard);
 
   const cardCount = data.total_cards;
   const pageCount = Math.ceil(cardCount / pageSize);
 
   return { cards, page, pageCount, cardCount };
+}
+
+export function getCardImage(card: ScryfallCard): string | undefined {
+  return card.image_uris?.normal ?? card.card_faces?.[0]?.image_uris?.normal;
 }
 
 export async function getMagicCard(id: string): Promise<ScryfallCard> {
@@ -145,7 +149,7 @@ function toDisplayCard(card: ScryfallCard): DisplayCard {
   return {
     id: card.id,
     name: card.name,
-    image: card.image_uris?.normal,
+    image: getCardImage(card),
     text: card.oracle_text,
     setName: card.set_name
   };
