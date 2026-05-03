@@ -84,7 +84,7 @@ export async function searchMagicCards(
 
   const searchQuery = parts.length > 0 ? parts.join(" ") : "*";
   const page = pageNumber || 1;
-  const pageSize = 20;
+  const pageSize = 175;
 
   const url = new URL(`${SCRYFALL_BASE}/cards/search`);
   url.searchParams.set("q", searchQuery);
@@ -96,7 +96,7 @@ export async function searchMagicCards(
   });
 
   if (!response.ok) {
-    if (response.status === 404) {
+    if (response.status === 404 || response.status === 422) {
       return { cards: [], page: 1, pageCount: 0, cardCount: 0 };
     }
     throw new Error(`Scryfall search failed: ${response.status}`);
