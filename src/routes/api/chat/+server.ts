@@ -1,6 +1,7 @@
 import { getDescription, setDescription } from "$lib/descriptions/description";
 import hsPrompt from "$lib/prompts/hs-prompt.md?raw";
 import magicPrompt from "$lib/prompts/magic-prompt.md?raw";
+import yugiohPrompt from "$lib/prompts/yugioh-prompt.md?raw";
 import { SupportedGames } from "$lib/types/games";
 import { createGoogleGenerativeAI } from "@ai-sdk/google";
 import { type RequestHandler } from "@sveltejs/kit";
@@ -10,7 +11,7 @@ import { env } from "$env/dynamic/private";
 const prompts: Record<SupportedGames, string> = {
   [SupportedGames.Hearthstone]: hsPrompt,
   [SupportedGames.Magic]: magicPrompt,
-  [SupportedGames.YuGiOh]: hsPrompt
+  [SupportedGames.YuGiOh]: yugiohPrompt
 };
 
 export const POST = (async ({ request }) => {

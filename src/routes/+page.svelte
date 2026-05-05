@@ -11,5 +11,6 @@
   <ul>
     <li><a href="/hearthstone/search">Hearthstone</a></li>
     <li><a href="/magic/search">Magic: The Gathering</a></li>
+    <li><a href="/yugioh/search">Yu-Gi-Oh!</a></li>
   </ul>
 </nav>
