@@ -42,11 +42,5 @@
     "dotenv": "^16.6.1",
     "ioredis": "^5.11.0",
     "svelte-exmarkdown": "^4.0.3"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "esbuild",
-      "svelte-preprocess"
-    ]
   }
 }
