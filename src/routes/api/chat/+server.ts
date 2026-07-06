@@ -55,7 +55,7 @@ export const POST = (async ({ request }) => {
   }
 
   const result = streamText({
-    model: googleAI("gemini-3-pro-preview"),
+    model: googleAI("gemini-3.1-pro-preview"),
     messages: [
       {
         role: "user",
